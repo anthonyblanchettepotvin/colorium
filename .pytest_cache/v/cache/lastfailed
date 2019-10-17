@@ -1,0 +1,4 @@
+{
+  "tests/test_assetData.py": true, 
+  "tests/test_observerPattern.py": true
+}
