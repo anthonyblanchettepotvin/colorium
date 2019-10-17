@@ -115,6 +115,15 @@ renderType = AssetTypeDefinition(
 )
 assetTypes.append(renderType)
 
+testType = AssetTypeDefinition(
+    code="tst",
+    name="Tests",
+    saveDir=SAVE_BASE_PATH + "/tests",
+    publishDir=PUBLISH_BASE_PATH + "/tests",
+    exportDir=EXPORT_PATH + "/tests"
+)
+assetTypes.append(renderType)
+
 @property
 def codes(self):
     codes = []
