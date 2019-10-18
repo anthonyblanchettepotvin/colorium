@@ -1,11 +1,3 @@
-import imports
-
-imports.dropCachedImports(
-    "functools",
-    "patterns",
-    "colorium"
-)
-
 import maya.cmds as cmds
 from functools import partial
 from patterns.observerPattern import Subject, Observer
@@ -15,6 +7,7 @@ import colorium.save as save
 import colorium.publish as publish
 import colorium.export as export
 import colorium.assetTypeDefinition as assetTypeDefinition
+
 
 class ColoriumAssetManagementToolUI:
     WINDOW_NAME = "coloriumAssetManagementTool"
@@ -443,9 +436,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
 
     def cancelCommand(self, *args):
         cmds.deleteUI(self._ui.WINDOW_NAME)
-
-        self.detachFromData()
-
+        
     def createCommand(self, *args):
         self._saveConfig.command = save.getCommandByName("MA")
 
