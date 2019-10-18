@@ -1,4 +1,0 @@
-assetManagementTool
-colorium
-imports
-patterns
