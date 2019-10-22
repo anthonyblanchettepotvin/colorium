@@ -1,11 +1,12 @@
 import os
 import maya.cmds as cmds
 from abc import ABCMeta, abstractmethod, abstractproperty
+from command import Command
 from configuration import Configuration
 
 
 # Module classes
-class ExportCommand:
+class ExportCommand(Command):
     __metaclass__ = ABCMeta
 
     @abstractproperty

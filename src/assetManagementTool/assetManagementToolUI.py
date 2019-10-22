@@ -2,10 +2,11 @@ import maya.cmds as cmds
 from functools import partial
 from patterns.observerPattern import Subject, Observer
 from colorium.assetData import AssetData
-from colorium.configuration import Configuration, SaveConfiguration, PublishConfiguration, ExportConfiguration
+from colorium.configuration import Configuration, SaveConfiguration, PublishConfiguration, ExportConfiguration, OpenConfiguration
 import colorium.save as save
 import colorium.publish as publish
 import colorium.export as export
+import colorium.open as open
 import colorium.assetTypeDefinition as assetTypeDefinition
 
 
@@ -354,6 +355,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
     _saveConfig = None
     _publishConfig = None
     _exportConfig = None
+    _openConfig = None
 
     @property
     def assetData(self):
@@ -365,12 +367,14 @@ class ColoriumAssetManagementToolController(Subject, Observer):
         self._saveConfig = SaveConfiguration(self._assetData)
         self._publishConfig = PublishConfiguration(self._assetData)
         self._exportConfig = ExportConfiguration(self._assetData)
+        self._openConfig = OpenConfiguration(self._assetData)
 
     def attachToData(self):
         self.attach(self._assetData)
         self._saveConfig.attachAndNotify(self)
         self._publishConfig.attachAndNotify(self)
         self._exportConfig.attachAndNotify(self)
+        self._openConfig.attachAndNotify(self)
 
     def attach(self, observer):
         self._observers.append(observer)
@@ -409,6 +413,8 @@ class ColoriumAssetManagementToolController(Subject, Observer):
         elif target == "exportConfig":
             cmds.textField(self._ui.EXPORT_FILE_NAME_FIELD_NAME, e=True, tx=self._exportConfig.fileName)
             cmds.textField(self._ui.EXPORT_PATH_FIELD_NAME, e=True, tx=self._exportConfig.path)
+        elif target == "openConfig":
+            pass
 
     def toggleFieldEdit(self, field, *args):
         NotImplemented
@@ -453,7 +459,18 @@ class ColoriumAssetManagementToolController(Subject, Observer):
             self._saveConfig.executeCommand()
 
     def openCommand(self, *args):
-        NotImplemented
+        self._openConfig.command = open.getCommandByName("Generic")
+
+        # openConfirmed = cmds.confirmDialog(
+        #     title="Create asset in " + self._saveConfig.command.name,
+        #     message="The asset is going to be open in " + self._saveConfig.command.name + " to " + self._saveConfig.path + " with the name " + self._saveConfig.fileName + ". Do you confirm the operation ?",
+        #     button=["Yes", "No"],
+        #     defaultButton="Yes",
+        #     cancelButton="No",
+        #     dismissString="No"
+        # )
+
+        self._openConfig.executeCommand()
 
     def commitCommand(self, *args):
         saveType = cmds.optionMenu(self._ui.SAVE_TYPE_MENU_NAME, q=True, v=True)
