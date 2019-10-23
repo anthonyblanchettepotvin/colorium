@@ -305,7 +305,7 @@ class ColoriumAssetManagementToolUI:
 
     def createPathPreviewField(self, labelName="", labelText="", fieldName="", fieldValue=""):
         self.createFileNamePreviewField(labelName, labelText, fieldName, fieldValue)
-        cmds.button(fieldName + "OpenButton", l="Open", c=partial(self._controller.openPathInExplorer, fieldValue))
+        cmds.button(fieldName + "OpenButton", l="Open", c=self._controller.openPathInExplorer)
 
     def createOptionMenuField(self, labelName="", labelText="", fieldName="", fieldValue="", items=[], changedCommand=""):
         cmds.separator(vis=False)
@@ -423,8 +423,10 @@ class ColoriumAssetManagementToolController(Subject, Observer):
     def toggleFieldEdit(self, field, *args):
         NotImplemented
 
-    def openPathInExplorer(self, path, *args):
-        NotImplemented
+    def openPathInExplorer(self, *args):
+        self._openConfig.command = open.getCommandByName("Explorer")
+
+        self._openConfig.executeCommand()
 
     def inputChangedCommand(self, prop, *args):
         self.notify(prop, args[0])
@@ -541,6 +543,3 @@ class ColoriumAssetManagementToolController(Subject, Observer):
 
         if exportConfirmed:
             self._exportConfig.executeCommand()
-
-
-ui = ColoriumAssetManagementToolUI()
