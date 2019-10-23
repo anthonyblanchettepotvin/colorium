@@ -6,7 +6,7 @@ from configuration import Configuration
 
 
 # Module classes
-class OpenCommand(Command):
+class CreateCommand(Command):
     __metaclass__ = ABCMeta
 
     @abstractproperty
@@ -18,8 +18,8 @@ class OpenCommand(Command):
         pass
 
 
-class GenericOpenCommand(OpenCommand):
-    _name = "Generic"
+class MayaAsciiCreateCommand(CreateCommand):
+    _name = "MA"
 
     @property
     def name(self):
@@ -27,9 +27,11 @@ class GenericOpenCommand(OpenCommand):
 
     def execute(self, config):
         if not os.path.exists(config.path + config.fileName + ".ma"):
+            os.makedirs(config.path)
+        else:
             cmds.confirmDialog(
-                title="Cannot open asset",
-                message="The asset cannot be opened. Please, make sure the asset information is correct.",
+                title="Cannot create asset",
+                message="The asset cannot be created, because an asset already exists for this configuration. Please, delete the original or change the configuration.",
                 button=["Ok"],
                 defaultButton="Ok"
             )
@@ -41,14 +43,15 @@ class GenericOpenCommand(OpenCommand):
             cmds.file(s=True)
             cmds.file(new=True)
 
-        cmds.file(config.path + config.fileName + ".ma", f=True, o=True, iv=True)
+        cmds.file(rn=config.path + config.fileName + config.fileExtension)
+        cmds.file(s=True, typ="mayaAscii")
 
 
 # Module functionnalities
 commands = []
 
-genericOpenCommand = GenericOpenCommand()
-commands.append(genericOpenCommand)
+mayaAsciiCreateCommand = MayaAsciiCreateCommand()
+commands.append(mayaAsciiCreateCommand)
 
 def getNames():
     names = []
