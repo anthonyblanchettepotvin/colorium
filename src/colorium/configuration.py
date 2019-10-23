@@ -8,15 +8,6 @@ import namingConvention
 class Configuration(Subject, Observer):
     _metaclass_ = ABCMeta
 
-    _observers = []
-
-    _fileName = ""
-    _fileExtension = ""
-    _path = ""
-    _parameters = None
-    _command = None
-    _assetData = None
-
     @property
     def fileName(self):
         return self._fileName
@@ -63,6 +54,12 @@ class Configuration(Subject, Observer):
         self.notify()
     
     def __init__(self, assetData):
+        self._observers = []
+        self._fileName = ""
+        self._fileExtension = ""
+        self._path = ""
+        self._parameters = None
+        self._command = None
         self._assetData = assetData
 
         self.updateFileName()

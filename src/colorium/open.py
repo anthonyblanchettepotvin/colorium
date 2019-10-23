@@ -44,11 +44,37 @@ class GenericOpenCommand(OpenCommand):
         cmds.file(config.path + config.fileName + ".ma", f=True, o=True, iv=True)
 
 
+class ExplorerOpenCommand(OpenCommand):
+    _name = "Explorer"
+
+    @property
+    def name(self):
+        return self._name
+
+    def execute(self, config):
+        if not os.path.exists(config.path):
+            cmds.confirmDialog(
+                title="Cannot open in Explorer",
+                message="The asset's folder cannot be opened in Explorer. Please, make sure the asset information is correct.",
+                button=["Ok"],
+                defaultButton="Ok"
+            )
+
+            return
+            
+        path = os.path.realpath(config.path)
+    
+        os.startfile(path)
+
+
 # Module functionnalities
 commands = []
 
 genericOpenCommand = GenericOpenCommand()
 commands.append(genericOpenCommand)
+
+explorerOpenCommand = ExplorerOpenCommand()
+commands.append(explorerOpenCommand)
 
 def getNames():
     names = []

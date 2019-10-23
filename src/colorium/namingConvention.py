@@ -85,7 +85,7 @@ def generateFileNameForSavedAsset(assetData):
         scene=assetData.scene,
         shot=assetData.shot,
         version=assetData.version
-    )
+    ).replace("__", "_")
 
 def generateFileNameForPublishedAsset(assetData):
     template = "{type}_{name}_"
@@ -104,7 +104,7 @@ def generateFileNameForPublishedAsset(assetData):
         variant=assetData.variant,
         scene=assetData.scene,
         shot=assetData.shot
-    )
+    ).replace("__", "_")
 
 def generateFileNameForExportedAsset(assetData):
     template = "{type}_{name}_"
@@ -123,7 +123,7 @@ def generateFileNameForExportedAsset(assetData):
         variant=assetData.variant,
         scene=assetData.scene,
         shot=assetData.shot
-    )
+    ).replace("__", "_")
 
 def generatePathForSavedAsset(assetData):
     template = "{saveDir}/"
@@ -143,7 +143,7 @@ def generatePathForSavedAsset(assetData):
         shot=assetData.shot,
         name=assetData.name,
         variant=assetData.variant
-    )
+    ).replace("//", "/")
 
 def generatePathForPublishedAsset(assetData):
     template = "{publishDir}/"
@@ -155,11 +155,11 @@ def generatePathForPublishedAsset(assetData):
         shot=assetData.shot,
         name=assetData.name,
         variant=assetData.variant
-    )
+    ).replace("//", "/")
 
 def generatePathForExportedAsset(assetData):
     template = "{exportDir}/"
-    
+
     if assetData.hasScene and assetData.hasShot:
         template += "{scene:03d}/{shot:03d}/"
     
@@ -175,4 +175,4 @@ def generatePathForExportedAsset(assetData):
         shot=assetData.shot,
         name=assetData.name,
         variant=assetData.variant
-    )
+    ).replace("//", "/")
