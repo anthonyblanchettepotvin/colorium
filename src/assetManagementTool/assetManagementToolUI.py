@@ -2,11 +2,12 @@ import maya.cmds as cmds
 from functools import partial
 from patterns.observerPattern import Subject, Observer
 from colorium.assetData import AssetData
-from colorium.configuration import Configuration, SaveConfiguration, PublishConfiguration, ExportConfiguration, OpenConfiguration
+from colorium.configuration import Configuration, SaveConfiguration, PublishConfiguration, ExportConfiguration, OpenConfiguration, CreateConfiguration
 import colorium.save as save
 import colorium.publish as publish
 import colorium.export as export
 import colorium.open as open
+import colorium.create as create
 import colorium.assetTypeDefinition as assetTypeDefinition
 
 
@@ -356,6 +357,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
     _publishConfig = None
     _exportConfig = None
     _openConfig = None
+    _createConfig = None
 
     @property
     def assetData(self):
@@ -368,6 +370,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
         self._publishConfig = PublishConfiguration(self._assetData)
         self._exportConfig = ExportConfiguration(self._assetData)
         self._openConfig = OpenConfiguration(self._assetData)
+        self._createConfig = CreateConfiguration(self._assetData)
 
     def attachToData(self):
         self.attach(self._assetData)
@@ -375,6 +378,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
         self._publishConfig.attachAndNotify(self)
         self._exportConfig.attachAndNotify(self)
         self._openConfig.attachAndNotify(self)
+        self._createConfig.attachAndNotify(self)
 
     def attach(self, observer):
         self._observers.append(observer)
@@ -444,11 +448,11 @@ class ColoriumAssetManagementToolController(Subject, Observer):
         cmds.deleteUI(self._ui.WINDOW_NAME)
         
     def createCommand(self, *args):
-        self._saveConfig.command = save.getCommandByName("MA")
+        self._createConfig.command = create.getCommandByName("MA")
 
         createConfirmed = cmds.confirmDialog(
-            title="Create asset in " + self._saveConfig.command.name,
-            message="The asset is going to be created in " + self._saveConfig.command.name + " to " + self._saveConfig.path + " with the name " + self._saveConfig.fileName + ". Do you confirm the operation ?",
+            title="Create asset in " + self._createConfig.command.name,
+            message="The asset is going to be created in " + self._createConfig.command.name + " to " + self._createConfig.path + " with the name " + self._createConfig.fileName + ". Do you confirm the operation ?",
             button=["Yes", "No"],
             defaultButton="Yes",
             cancelButton="No",
@@ -456,7 +460,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
         )
 
         if createConfirmed:
-            self._saveConfig.executeCommand()
+            self._createConfig.executeCommand()
 
     def openCommand(self, *args):
         self._openConfig.command = open.getCommandByName("Generic")

@@ -158,3 +158,15 @@ class OpenConfiguration(Configuration):
 
     def updatePath(self):
         self.path = namingConvention.generatePathForSavedAsset(self.assetData)
+
+
+class CreateConfiguration(Configuration):
+    def notify(self, *args):
+        for observer in self._observers:
+            observer.update("createConfig")
+
+    def updateFileName(self):
+        self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData) + self.fileExtension
+
+    def updatePath(self):
+        self.path = namingConvention.generatePathForSavedAsset(self.assetData)
