@@ -146,3 +146,15 @@ class ExportConfiguration(Configuration):
 
     def updatePath(self):
         self.path = namingConvention.generatePathForExportedAsset(self.assetData)
+
+
+class OpenConfiguration(Configuration):
+    def notify(self, *args):
+        for observer in self._observers:
+            observer.update("openConfig")
+
+    def updateFileName(self):
+        self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData) + self.fileExtension
+
+    def updatePath(self):
+        self.path = namingConvention.generatePathForSavedAsset(self.assetData)
