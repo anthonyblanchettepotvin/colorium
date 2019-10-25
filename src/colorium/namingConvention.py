@@ -136,6 +136,8 @@ def generatePathForSavedAsset(assetData):
 
     if assetData.hasScene and assetData.hasShot:
         template += "{scene:03d}/{shot:03d}/"
+    elif assetData.hasScene:
+        template += "{scene:03d}/"
     
     template += "{name}/"
     
@@ -168,6 +170,8 @@ def generatePathForExportedAsset(assetData):
 
     if assetData.hasScene and assetData.hasShot:
         template += "{scene:03d}/{shot:03d}/"
+    elif assetData.hasScene:
+        template += "{scene:03d}/"
     
     template += "{name}/"
     
