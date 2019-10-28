@@ -65,7 +65,7 @@ class MayaAsciiExportCommand(ExportCommand):
 
             return
 
-        cmds.file(config.path + config.fileName + config.fileExtension, es=True, typ="mayaAscii")
+        cmds.file(config.path + config.fileName, es=True, typ="mayaAscii")
 
 
 class MayaBinaryExportCommand(ExportCommand):
@@ -95,7 +95,7 @@ class MayaBinaryExportCommand(ExportCommand):
 
             return
 
-        cmds.file(config.path + config.fileName + config.fileExtension, es=True, typ="mayaBinary")
+        cmds.file(config.path + config.fileName, es=True, typ="mayaBinary")
 
 
 class AlembicExportCommand(ExportCommand):

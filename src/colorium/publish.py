@@ -65,7 +65,7 @@ class MayaAsciiPublishCommand(PublishCommand):
 
             return
 
-        cmds.file(config.path + config.fileName + config.fileExtension, es=True, typ="mayaAscii")
+        cmds.file(config.path + config.fileName, es=True, typ="mayaAscii")
 
 
 class GeometryCachePublishCommand(PublishCommand):

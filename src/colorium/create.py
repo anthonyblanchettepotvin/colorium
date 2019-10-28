@@ -43,7 +43,7 @@ class MayaAsciiCreateCommand(CreateCommand):
             cmds.file(s=True)
             cmds.file(new=True)
 
-        cmds.file(rn=config.path + config.fileName + config.fileExtension)
+        cmds.file(rn=config.path + config.fileName)
         cmds.file(s=True, typ="mayaAscii")
 
 

@@ -54,7 +54,7 @@ class MayaAsciiSaveCommand(SaveCommand):
         if not os.path.exists(config.path):
             os.makedirs(config.path)
 
-        cmds.file(rn=config.path + config.fileName + config.fileExtension)
+        cmds.file(rn=config.path + config.fileName)
         cmds.file(s=True, typ="mayaAscii")
 
 
@@ -74,7 +74,7 @@ class MayaBinarySaveCommand(SaveCommand):
         if not os.path.exists(config.path):
             os.makedirs(config.path)
 
-        cmds.file(rn=config.path + config.fileName + config.fileExtension)
+        cmds.file(rn=config.path + config.fileName)
         cmds.file(s=True, typ="mayaBinary")
 
 

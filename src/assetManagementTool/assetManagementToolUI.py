@@ -210,19 +210,19 @@ class ColoriumAssetManagementToolUI:
     SAVE_FILE_NAME_LABEL_TEXT = "Save File Name"
     SAVE_FILE_NAME_FIELD_NAME = "saveFileNameField"
     def createSaveFileNameField(self, parent):
-        self.createFileNamePreviewField(self.SAVE_FILE_NAME_LABEL_NAME, self.SAVE_FILE_NAME_LABEL_TEXT, self.SAVE_FILE_NAME_FIELD_NAME, self._controller._saveConfig.fileName)
+        self.createFileNamePreviewField(self.SAVE_FILE_NAME_LABEL_NAME, self.SAVE_FILE_NAME_LABEL_TEXT, self.SAVE_FILE_NAME_FIELD_NAME, self._controller._saveConfig.fileName, self._controller._saveConfig, "fileName")
 
     PUBLISH_FILE_NAME_LABEL_NAME = "publishFileNameLabel"
     PUBLISH_FILE_NAME_LABEL_TEXT = "Publish File Name"
     PUBLISH_FILE_NAME_FIELD_NAME = "publishFileNameField"
     def createPublishFileNameField(self, parent):
-        self.createFileNamePreviewField(self.PUBLISH_FILE_NAME_LABEL_NAME, self.PUBLISH_FILE_NAME_LABEL_TEXT, self.PUBLISH_FILE_NAME_FIELD_NAME, self._controller._publishConfig.fileName)
+        self.createFileNamePreviewField(self.PUBLISH_FILE_NAME_LABEL_NAME, self.PUBLISH_FILE_NAME_LABEL_TEXT, self.PUBLISH_FILE_NAME_FIELD_NAME, self._controller._publishConfig.fileName, self._controller._publishConfig, "fileName")
 
     EXPORT_FILE_NAME_LABEL_NAME = "exportFileNameLabel"
     EXPORT_FILE_NAME_LABEL_TEXT = "Export File Name"
     EXPORT_FILE_NAME_FIELD_NAME = "exportFileNameField"
     def createExportFileNameField(self, parent):
-        self.createFileNamePreviewField(self.EXPORT_FILE_NAME_LABEL_NAME, self.EXPORT_FILE_NAME_LABEL_TEXT, self.EXPORT_FILE_NAME_FIELD_NAME, self._controller._exportConfig.fileName)
+        self.createFileNamePreviewField(self.EXPORT_FILE_NAME_LABEL_NAME, self.EXPORT_FILE_NAME_LABEL_TEXT, self.EXPORT_FILE_NAME_FIELD_NAME, self._controller._exportConfig.fileName, self._controller._exportConfig, "fileName")
 
 
     # Create Asset Path View
@@ -249,19 +249,19 @@ class ColoriumAssetManagementToolUI:
     SAVE_PATH_LABEL_TEXT = "Save Path"
     SAVE_PATH_FIELD_NAME = "savePathField"
     def createSavePathField(self, parent):
-        self.createPathPreviewField(self.SAVE_PATH_LABEL_NAME, self.SAVE_PATH_LABEL_TEXT, self.SAVE_PATH_FIELD_NAME, self._controller._saveConfig.path, self._controller._saveConfig)
+        self.createPathPreviewField(self.SAVE_PATH_LABEL_NAME, self.SAVE_PATH_LABEL_TEXT, self.SAVE_PATH_FIELD_NAME, self._controller._saveConfig.path, self._controller._saveConfig, "path")
 
     PUBLISH_PATH_LABEL_NAME = "publishPathLabel"
     PUBLISH_PATH_LABEL_TEXT = "Publish Path"
     PUBLISH_PATH_FIELD_NAME = "publishPathField"
     def createPublishPathField(self, parent):
-        self.createPathPreviewField(self.PUBLISH_PATH_LABEL_NAME, self.PUBLISH_PATH_LABEL_TEXT, self.PUBLISH_PATH_FIELD_NAME, self._controller._publishConfig.path, self._controller._publishConfig)
+        self.createPathPreviewField(self.PUBLISH_PATH_LABEL_NAME, self.PUBLISH_PATH_LABEL_TEXT, self.PUBLISH_PATH_FIELD_NAME, self._controller._publishConfig.path, self._controller._publishConfig, "path")
 
     EXPORT_PATH_LABEL_NAME = "exportPathLabel"
     EXPORT_PATH_LABEL_TEXT = "Export Path"
     EXPORT_PATH_FIELD_NAME = "exportPathField"
     def createExportPathField(self, parent):
-        self.createPathPreviewField(self.EXPORT_PATH_LABEL_NAME, self.EXPORT_PATH_LABEL_TEXT, self.EXPORT_PATH_FIELD_NAME, self._controller._exportConfig.path, self._controller._exportConfig)
+        self.createPathPreviewField(self.EXPORT_PATH_LABEL_NAME, self.EXPORT_PATH_LABEL_TEXT, self.EXPORT_PATH_FIELD_NAME, self._controller._exportConfig.path, self._controller._exportConfig, "path")
 
 
     # Create Button Section
@@ -298,13 +298,13 @@ class ColoriumAssetManagementToolUI:
     def createCommitButton(self, parent):
         cmds.button("commitButton", l="Commit", w=75, c=self._controller.commitCommand)
 
-    def createFileNamePreviewField(self, labelName="", labelText="", fieldName="", fieldValue=""):
+    def createFileNamePreviewField(self, labelName="", labelText="", fieldName="", fieldValue="", config=None, configProperty=""):
         cmds.text(labelName, l=labelText, al="left")
-        cmds.textField(fieldName, tx=fieldValue, en=False)
-        cmds.button(fieldName + "EditButton", l="Edit", c=partial(self._controller.toggleFieldEdit, fieldName))
+        cmds.textField(fieldName, tx=fieldValue, en=False, tcc=partial(self._controller.previewTextChanged, fieldName, config, configProperty))
+        cmds.button(fieldName + "EditButton", l="Edit", c=partial(self._controller.toggleFieldEdit, fieldName, config, configProperty))
 
-    def createPathPreviewField(self, labelName="", labelText="", fieldName="", fieldValue="", config=""):
-        self.createFileNamePreviewField(labelName, labelText, fieldName, fieldValue)
+    def createPathPreviewField(self, labelName="", labelText="", fieldName="", fieldValue="", config=None, configProperty=""):
+        self.createFileNamePreviewField(labelName, labelText, fieldName, fieldValue, config, configProperty)
         cmds.button(fieldName + "OpenButton", l="Open", c=partial(self._controller.openPathInExplorer, config))
 
     def createOptionMenuField(self, labelName="", labelText="", fieldName="", fieldValue="", items=[], changedCommand=""):
@@ -420,8 +420,30 @@ class ColoriumAssetManagementToolController(Subject, Observer):
         elif target == "openConfig":
             pass
 
-    def toggleFieldEdit(self, field, *args):
-        NotImplemented
+    def previewTextChanged(self, field, config, property, *args):
+        text = cmds.textField(field, q=True, tx=True)
+
+        if property == "fileName":
+            config.fileName = text
+        elif property == "path":
+            config.path = text
+
+    def toggleFieldEdit(self, field, config, property, *args):
+        enabled = cmds.control(field, q=True, en=True)
+
+        if enabled:
+            enabled = False
+        else:
+            enabled = True
+
+        cmds.control(field, e=True, en=enabled)
+
+        if property == "fileName":
+            config.fileNameOverridden = enabled
+        elif property == "path":
+            config.pathOverridden = enabled
+
+        config.update()
 
     def openPathInExplorer(self, config, *args):
         config.command = open.getCommandByName("Explorer")
@@ -461,22 +483,23 @@ class ColoriumAssetManagementToolController(Subject, Observer):
             dismissString="No"
         )
 
-        if createConfirmed:
+        if createConfirmed == "Yes":
             self._createConfig.executeCommand()
 
     def openCommand(self, config, *args):
         self._openConfig.command = open.getCommandByName("Generic")
 
-        # openConfirmed = cmds.confirmDialog(
-        #     title="Create asset in " + self._saveConfig.command.name,
-        #     message="The asset is going to be open in " + self._saveConfig.command.name + " to " + self._saveConfig.path + " with the name " + self._saveConfig.fileName + ". Do you confirm the operation ?",
-        #     button=["Yes", "No"],
-        #     defaultButton="Yes",
-        #     cancelButton="No",
-        #     dismissString="No"
-        # )
+        openConfirmed = cmds.confirmDialog(
+            title="Open asset",
+            message="The asset named " + self._openConfig.fileName + " in " + self._openConfig.path + " is going to be opened. Do you confirm the operation ?",
+            button=["Yes", "No"],
+            defaultButton="Yes",
+            cancelButton="No",
+            dismissString="No"
+        )
 
-        self._openConfig.executeCommand()
+        if openConfirmed == "Yes":
+            self._openConfig.executeCommand()
 
     def commitCommand(self, *args):
         saveType = cmds.optionMenu(self._ui.SAVE_TYPE_MENU_NAME, q=True, v=True)

@@ -9,6 +9,14 @@ class Configuration(Subject, Observer):
     _metaclass_ = ABCMeta
 
     @property
+    def fileNameOverridden(self):
+        return self._fileNameOverridden
+
+    @fileNameOverridden.setter
+    def fileNameOverridden(self, value):
+        self._fileNameOverridden = value
+
+    @property
     def fileName(self):
         return self._fileName
 
@@ -17,14 +25,22 @@ class Configuration(Subject, Observer):
         self._fileName = value
         self.notify()
 
-    @property
-    def fileExtension(self):
-        return self._fileExtension
+    # @property
+    # def fileExtension(self):
+    #     return self._fileExtension
 
-    @fileExtension.setter
-    def fileExtension(self, value):
-        self._fileExtension = value
-        self.notify()
+    # @fileExtension.setter
+    # def fileExtension(self, value):
+    #     self._fileExtension = value
+    #     self.notify()
+
+    @property
+    def pathOverridden(self):
+        return self._pathOverridden
+
+    @pathOverridden.setter
+    def pathOverridden(self, value):
+        self._pathOverridden = value
 
     @property
     def path(self):
@@ -55,8 +71,9 @@ class Configuration(Subject, Observer):
     
     def __init__(self, assetData):
         self._observers = []
+        self._fileNameOverridden = False
         self._fileName = ""
-        self._fileExtension = ""
+        self._pathOverridden = False
         self._path = ""
         self._parameters = None
         self._command = None
@@ -115,10 +132,12 @@ class SaveConfiguration(Configuration):
             observer.update("saveConfig")
 
     def updateFileName(self):
-        self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData) + self.fileExtension
+        if not self.fileNameOverridden:
+            self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
 
     def updatePath(self):
-        self.path = namingConvention.generatePathForSavedAsset(self.assetData)
+        if not self.pathOverridden:
+            self.path = namingConvention.generatePathForSavedAsset(self.assetData)
 
 
 class PublishConfiguration(Configuration):
@@ -127,10 +146,12 @@ class PublishConfiguration(Configuration):
             observer.update("publishConfig")
 
     def updateFileName(self):
-        self.fileName = namingConvention.generateFileNameForPublishedAsset(self.assetData) + self.fileExtension
+        if not self.fileNameOverridden:
+            self.fileName = namingConvention.generateFileNameForPublishedAsset(self.assetData)
 
     def updatePath(self):
-        self.path = namingConvention.generatePathForPublishedAsset(self.assetData)
+        if not self.pathOverridden:
+            self.path = namingConvention.generatePathForPublishedAsset(self.assetData)
 
 
 class ExportConfiguration(Configuration):
@@ -139,10 +160,12 @@ class ExportConfiguration(Configuration):
             observer.update("exportConfig")
 
     def updateFileName(self):
-        self.fileName = namingConvention.generateFileNameForExportedAsset(self.assetData) + self.fileExtension
+        if not self.fileNameOverridden:
+            self.fileName = namingConvention.generateFileNameForExportedAsset(self.assetData)
 
     def updatePath(self):
-        self.path = namingConvention.generatePathForExportedAsset(self.assetData)
+        if not self.pathOverridden:
+            self.path = namingConvention.generatePathForExportedAsset(self.assetData)
 
 
 class OpenConfiguration(Configuration):
@@ -151,10 +174,12 @@ class OpenConfiguration(Configuration):
             observer.update("openConfig")
 
     def updateFileName(self):
-        self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData) + self.fileExtension
+        if not self.fileNameOverridden:
+            self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
 
     def updatePath(self):
-        self.path = namingConvention.generatePathForSavedAsset(self.assetData)
+        if not self.pathOverridden:
+            self.path = namingConvention.generatePathForSavedAsset(self.assetData)
 
 
 class CreateConfiguration(Configuration):
@@ -163,7 +188,9 @@ class CreateConfiguration(Configuration):
             observer.update("createConfig")
 
     def updateFileName(self):
-        self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData) + self.fileExtension
+        if not self.fileNameOverridden:
+            self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
 
     def updatePath(self):
-        self.path = namingConvention.generatePathForSavedAsset(self.assetData)
+        if not self.pathOverridden:
+            self.path = namingConvention.generatePathForSavedAsset(self.assetData)
