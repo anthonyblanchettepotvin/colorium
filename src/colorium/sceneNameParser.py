@@ -1,59 +1,58 @@
 from assetData import AssetData
 from namingConvention import NamingConvention
+import assetTypeDefinition
 
-class SceneNameParser:
-    namingConvention = None
-    assetData = None
-    
-    def __init__(self):
-        self.namingConvention = NamingConvention()
-        self.assetData = AssetData()
-    
-    def parseSceneName(self, sceneName):
-        self.parseTypeValueFromSceneName(sceneName)
-        self.parseNameValueFromSceneName(sceneName)
-        self.parseVariantValueFromSceneName(sceneName)
-        self.parseSceneValueFromSceneName(sceneName)
-        self.parseShotValueFromSceneName(sceneName)
-        self.parseVersionValueFromSceneName(sceneName)
-        
-        return self.assetData
-        
-    def parseTypeValueFromSceneName(self, sceneName):
-        type = self.namingConvention.searchTypeInSceneName(sceneName)
-        
-        if type != None:
-            self.assetData.type = type
-        
-    def parseNameValueFromSceneName(self, sceneName):
-        name = self.namingConvention.searchNameInSceneName(sceneName)
-        
-        if name != None:
-            self.assetData.name = name
 
-    def parseVariantValueFromSceneName(self, sceneName):
-        variant = self.namingConvention.searchVariantInSceneName(sceneName)
-        
-        if variant != None:
-            self.assetData.variant = int(variant)
-            self.assetData.hasVariant = True
+_namingConvention = NamingConvention()
+_assetData = AssetData()
+
+def parseSceneName(sceneName):
+    parseTypeValueFromSceneName(sceneName)
+    parseNameValueFromSceneName(sceneName)
+    parseVariantValueFromSceneName(sceneName)
+    parseSceneValueFromSceneName(sceneName)
+    parseShotValueFromSceneName(sceneName)
+    parseVersionValueFromSceneName(sceneName)
     
-    def parseSceneValueFromSceneName(self, sceneName):
-        scene = self.namingConvention.searchSceneInSceneName(sceneName)
-        
-        if scene != None:
-            self.assetData.scene = int(scene)
-            self.assetData.hasScene = True
+    return _assetData
     
-    def parseShotValueFromSceneName(self, sceneName):
-        shot = self.namingConvention.searchShotInSceneName(sceneName)
-        
-        if shot != None:
-            self.assetData.shot = int(shot)
-            self.assetData.hasShot = True
-        
-    def parseVersionValueFromSceneName(self, sceneName):
-        version = self.namingConvention.searchVersionInSceneName(sceneName)
-        
-        if version != None:
-            self.assetData.version = int(version.replace("v", ""))
+def parseTypeValueFromSceneName(sceneName):
+    type = _namingConvention.searchTypeInSceneName(sceneName)
+    
+    if type != None:
+        for assetType in assetTypeDefinition.assetTypes:
+                if assetType.code == type:
+                    _assetData.type = assetType
+    
+def parseNameValueFromSceneName(sceneName):
+    name = _namingConvention.searchNameInSceneName(sceneName)
+    
+    if name != None:
+        _assetData.name = name
+
+def parseVariantValueFromSceneName(sceneName):
+    variant = _namingConvention.searchVariantInSceneName(sceneName)
+    
+    if variant != None:
+        _assetData.variant = int(variant)
+        _assetData.hasVariant = True
+
+def parseSceneValueFromSceneName(sceneName):
+    scene = _namingConvention.searchSceneInSceneName(sceneName)
+    
+    if scene != None:
+        _assetData.scene = int(scene)
+        _assetData.hasScene = True
+
+def parseShotValueFromSceneName(sceneName):
+    shot = _namingConvention.searchShotInSceneName(sceneName)
+    
+    if shot != None:
+        _assetData.shot = int(shot)
+        _assetData.hasShot = True
+    
+def parseVersionValueFromSceneName(sceneName):
+    version = _namingConvention.searchVersionInSceneName(sceneName)
+    
+    if version != None:
+        _assetData.version = int(version.replace("v", ""))

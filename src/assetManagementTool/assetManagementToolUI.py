@@ -3,6 +3,7 @@ from functools import partial
 from patterns.observerPattern import Subject, Observer
 from colorium.assetData import AssetData
 from colorium.configuration import Configuration, SaveConfiguration, PublishConfiguration, ExportConfiguration, OpenConfiguration, CreateConfiguration
+import colorium.sceneNameParser as parser
 import colorium.save as save
 import colorium.publish as publish
 import colorium.export as export
@@ -75,7 +76,7 @@ class ColoriumAssetManagementToolUI:
     ASSET_TYPE_MENU_NAME = "assetTypeMenu"
     ASSET_TYPE_MENU_ITEMS = assetTypeDefinition.names
     def createAssetTypeField(self, parent):
-        self.createOptionMenuField(self.ASSET_TYPE_LABEL_NAME, self.ASSET_TYPE_LABEL_TEXT, self.ASSET_TYPE_MENU_NAME, self._controller.assetData.type, self.ASSET_TYPE_MENU_ITEMS, partial(self._controller.inputChangedCommand, "type"))
+        self.createOptionMenuField(self.ASSET_TYPE_LABEL_NAME, self.ASSET_TYPE_LABEL_TEXT, self.ASSET_TYPE_MENU_NAME, self._controller.assetData.type.name, self.ASSET_TYPE_MENU_ITEMS, partial(self._controller.inputChangedCommand, "type"))
 
     ASSET_NAME_LABEL_NAME = "assetNameLabel"
     ASSET_NAME_LABEL_TEXT = "Name"
@@ -131,7 +132,7 @@ class ColoriumAssetManagementToolUI:
     SAVE_TYPE_MENU_NAME = "saveTypeMenu"
     SAVE_TYPE_MENU_ITEMS = save.getNames()
     def createSaveTypeField(self, parent):
-        self.createOptionMenuField(self.SAVE_TYPE_LABEL_NAME, self.SAVE_TYPE_LABEL_TEXT, self.SAVE_TYPE_MENU_NAME, self._controller.assetData.type, self.SAVE_TYPE_MENU_ITEMS, self._controller.saveTypeChangedCommand)
+        self.createOptionMenuField(self.SAVE_TYPE_LABEL_NAME, self.SAVE_TYPE_LABEL_TEXT, self.SAVE_TYPE_MENU_NAME, "None", self.SAVE_TYPE_MENU_ITEMS, self._controller.saveTypeChangedCommand)
 
 
     # Create Publish Options View
@@ -157,7 +158,7 @@ class ColoriumAssetManagementToolUI:
     PUBLISH_TYPE_MENU_NAME = "publishTypeMenu"
     PUBLISH_TYPE_MENU_ITEMS = publish.getNames()
     def createPublishTypeField(self, parent):
-        self.createOptionMenuField(self.PUBLISH_TYPE_LABEL_NAME, self.PUBLISH_TYPE_LABEL_TEXT, self.PUBLISH_TYPE_MENU_NAME, self._controller.assetData.type, self.PUBLISH_TYPE_MENU_ITEMS, self._controller.publishTypeChangedCommand)
+        self.createOptionMenuField(self.PUBLISH_TYPE_LABEL_NAME, self.PUBLISH_TYPE_LABEL_TEXT, self.PUBLISH_TYPE_MENU_NAME, "None", self.PUBLISH_TYPE_MENU_ITEMS, self._controller.publishTypeChangedCommand)
 
 
     # Create Export Options View
@@ -183,7 +184,7 @@ class ColoriumAssetManagementToolUI:
     EXPORT_TYPE_MENU_NAME = "exportTypeMenu"
     EXPORT_TYPE_MENU_ITEMS = export.getNames()
     def createExportTypeField(self, parent):
-        self.createOptionMenuField(self.EXPORT_TYPE_LABEL_NAME, self.EXPORT_TYPE_LABEL_TEXT, self.EXPORT_TYPE_MENU_NAME, self._controller.assetData.type, self.EXPORT_TYPE_MENU_ITEMS, self._controller.exportTypeChangedCommand)
+        self.createOptionMenuField(self.EXPORT_TYPE_LABEL_NAME, self.EXPORT_TYPE_LABEL_TEXT, self.EXPORT_TYPE_MENU_NAME, "None", self.EXPORT_TYPE_MENU_ITEMS, self._controller.exportTypeChangedCommand)
 
 
     # Create Asset File Name View
@@ -318,6 +319,8 @@ class ColoriumAssetManagementToolUI:
         for item in items:
             cmds.menuItem(l=item)
 
+        cmds.optionMenu(fieldName, e=True, v=fieldValue)
+
         cmds.separator(vis=False)
 
     def createTextField(self, labelName="", labelText="", fieldName="", fieldValue="", textChangedCommand=""):
@@ -363,9 +366,19 @@ class ColoriumAssetManagementToolController(Subject, Observer):
     def assetData(self):
         return self._assetData
 
+    @assetData.setter
+    def assetData(self, value):
+        self._assetData = value
+
     def __init__(self, UI):
         self._ui = UI
-        self._assetData = AssetData()
+
+        sceneName = cmds.file(q=True, sn=True, shn=True)
+        if sceneName:
+            self._assetData = parser.parseSceneName(sceneName)
+        else:
+            self._assetData = AssetData()
+        
         self._saveConfig = SaveConfiguration(self._assetData)
         self._publishConfig = PublishConfiguration(self._assetData)
         self._exportConfig = ExportConfiguration(self._assetData)
