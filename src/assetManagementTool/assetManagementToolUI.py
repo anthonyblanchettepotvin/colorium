@@ -515,7 +515,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
             dismissString="No"
         )
 
-        if saveConfirmed:
+        if saveConfirmed == "Yes":
             self._saveConfig.executeCommand()
 
     def publish(self):
@@ -528,7 +528,7 @@ class ColoriumAssetManagementToolController(Subject, Observer):
             dismissString="No"
         )
 
-        if publishConfirmed:
+        if publishConfirmed == "Yes":
             self._publishConfig.executeCommand()
 
     def export(self):
@@ -541,5 +541,5 @@ class ColoriumAssetManagementToolController(Subject, Observer):
             dismissString="No"
         )
 
-        if exportConfirmed:
+        if exportConfirmed == "Yes":
             self._exportConfig.executeCommand()

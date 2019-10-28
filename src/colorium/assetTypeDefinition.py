@@ -37,9 +37,9 @@ class AssetTypeDefinition:
 
 
 # Module functionnalities
-SAVE_BASE_PATH = "Y:/project/maya_work/scenes"
-PUBLISH_BASE_PATH = "Y:/project/maya_work/assets"
-EXPORT_PATH = "Y:/project/exports/maya"
+SAVE_BASE_PATH = "C:/Users/apotvin/Desktop/project/maya/scenes"
+PUBLISH_BASE_PATH = "C:/Users/apotvin/Desktop/project/maya/assets"
+EXPORT_PATH = "C:/Users/apotvin/Desktop/project/exports/maya"
 
 assetTypes = []
 
