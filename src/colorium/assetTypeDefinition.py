@@ -117,15 +117,14 @@ assetTypes.append(renderType)
 
 testType = AssetTypeDefinition(
     code="tst",
-    name="Tests",
+    name="Test",
     saveDir=SAVE_BASE_PATH + "/tests",
     publishDir=PUBLISH_BASE_PATH + "/tests",
     exportDir=EXPORT_PATH + "/tests"
 )
-assetTypes.append(renderType)
+assetTypes.append(testType)
 
-@property
-def codes(self):
+def codes():
     codes = []
 
     for assetType in assetTypes:
@@ -133,8 +132,7 @@ def codes(self):
 
     return codes
 
-@property
-def names(self):
+def names():
     names = []
 
     for assetType in assetTypes:

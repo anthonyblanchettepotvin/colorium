@@ -74,7 +74,7 @@ class ColoriumAssetManagementToolUI:
     ASSET_TYPE_LABEL_NAME = "assetTypeLabel"
     ASSET_TYPE_LABEL_TEXT = "Type"
     ASSET_TYPE_MENU_NAME = "assetTypeMenu"
-    ASSET_TYPE_MENU_ITEMS = assetTypeDefinition.names
+    ASSET_TYPE_MENU_ITEMS = assetTypeDefinition.names()
     def createAssetTypeField(self, parent):
         self.createOptionMenuField(self.ASSET_TYPE_LABEL_NAME, self.ASSET_TYPE_LABEL_TEXT, self.ASSET_TYPE_MENU_NAME, self._controller.assetData.type.name, self.ASSET_TYPE_MENU_ITEMS, partial(self._controller.inputChangedCommand, "type"))
 
