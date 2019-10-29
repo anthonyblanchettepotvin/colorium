@@ -88,13 +88,13 @@ class AssetManagementToolUI(CUI.CUI):
 
         frm_file_name_preview = cmds.frameLayout("frm_file_name_preview", l="File Name Preview", p=self.main_layout, mh=5, mw=5)
 
-        save_file_name_input = CUI.CTextInput("savefn", frm_file_name_preview, True, None, None, True)
+        save_file_name_input = CUI.CTextInput("savefn", frm_file_name_preview, False, None, None, True)
         self.add_control(save_file_name_input)
 
-        publish_file_name_input = CUI.CTextInput("publishfn", frm_file_name_preview, True, None, None, True)
+        publish_file_name_input = CUI.CTextInput("publishfn", frm_file_name_preview, False, None, None, True)
         self.add_control(publish_file_name_input)
 
-        export_file_name_input = CUI.CTextInput("exportfn", frm_file_name_preview, True, None, None, True)
+        export_file_name_input = CUI.CTextInput("exportfn", frm_file_name_preview, False, None, None, True)
         self.add_control(export_file_name_input)
     
     
@@ -105,13 +105,13 @@ class AssetManagementToolUI(CUI.CUI):
 
         frm_path_preview = cmds.frameLayout("frm_path_preview", l="Path Preview", p=self.main_layout, mh=5, mw=5)
 
-        save_path_input = CUI.CFilePathInput("savep", frm_path_preview, True, None, None, True)
+        save_path_input = CUI.CFilePathInput("savep", frm_path_preview, False, None, None, True)
         self.add_control(save_path_input)
 
-        publish_path_input = CUI.CFilePathInput("publishp", frm_path_preview, True, None, None, True)
+        publish_path_input = CUI.CFilePathInput("publishp", frm_path_preview, False, None, None, True)
         self.add_control(publish_path_input)
 
-        export_path_input = CUI.CFilePathInput("exportp", frm_path_preview, True, None, None, True)
+        export_path_input = CUI.CFilePathInput("exportp", frm_path_preview, False, None, None, True)
         self.add_control(export_path_input)
     
     
