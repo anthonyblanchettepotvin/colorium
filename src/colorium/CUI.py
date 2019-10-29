@@ -1,5 +1,5 @@
+from abc import ABCMeta, abstractproperty, abstractmethod
 import maya.cmds as cmds
-
 
 class CUI(object):
     @property
@@ -118,3 +118,122 @@ class CController(object):
         """
         
         NotImplemented
+
+
+class CToggleable(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def toggle(self, value):
+        """
+        Enables/disables the control.
+        """
+
+        NotImplemented
+
+
+class CUpdateable(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def update_value(self, value):
+        """
+        Updates the control's value.
+        """
+
+        NotImplemented
+
+
+class CControl(object):
+    def __init__(self, name, parent):
+        self._name = name
+        self._parent = parent
+
+    def build_ui(self):
+        """
+        Builds the control's UI.
+        """
+
+        NotImplemented
+
+
+class CTextInput(CControl, CToggleable, CUpdateable):
+    def __init__(self, name, parent, enabled=True, changed_command=None, toggle_command=None, build=False):
+        super(CTextInput, self).__init__(name, parent)
+
+        self._enabled = enabled
+        self._changed_command = changed_command
+        self._toggle_command = toggle_command
+
+        if build:
+            self.build_ui()
+
+
+    def build_ui(self):
+        layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
+        cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self._enabled, cc=lambda value: self.toggle(value))
+        cmds.text("lbl_{}".format(self._name), p=layout, l="Asset {}:".format(self._name), al="right")
+        cmds.textField("txt_{}".format(self._name), p=layout, en=self._enabled, tcc=lambda value: self._changed_command(value))
+
+
+    def toggle(self, value):
+        self._toggle_command(value)
+        cmds.control("txt_{}".format(self._name), e=True, en=value)
+
+    
+    def update_value(self, value):
+        cmds.textField("txt_{}".format(self._name), e=True, tx=value)
+
+
+class CIntInput(CControl, CToggleable):
+    def __init__(self, name, parent, enabled=True, min=1, max=10, changed_command=None, toggle_command=None, build=False):
+        super(CIntInput, self).__init__(name, parent)
+
+        self._enabled = enabled
+        self._min = min
+        self._max = max
+        self._changed_command = changed_command
+        self._toggle_command = toggle_command
+
+        if build:
+            self.build_ui()
+
+
+    def build_ui(self):
+        layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
+        cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self._enabled, cc=lambda value: self.toggle(value))
+        cmds.text("lbl_{}".format(self._name), p=layout, l="Asset {}:".format(self._name), al="right")
+        cmds.intSliderGrp("int_{}".format(self._name), p=layout, f=True, min=self._min, max=self._max, en=self._enabled, cc=lambda value: self._changed_command(value))
+
+
+    def toggle(self, value):
+        self._toggle_command(value)
+        cmds.control("int_{}".format(self._name), e=True, en=value)
+
+
+class CComboInput(CControl, CToggleable):
+    def __init__(self, name, parent, enabled=True, items=[], changed_command=None, toggle_command=None, build=False):
+        super(CComboInput, self).__init__(name, parent)
+
+        self._enabled = enabled
+        self._items = items
+        self._changed_command = changed_command
+        self._toggle_command = toggle_command
+
+        if build:
+            self.build_ui()
+
+
+    def build_ui(self):
+        layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
+        cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self._enabled, cc=lambda value: self.toggle(value))
+        cmds.text("lbl_{}".format(self._name), p=layout, l="Asset {}:".format(self._name), al="right")
+        cmds.optionMenu("cmb_{}".format(self._name), p=layout, en=self._enabled, cc=lambda value: self._changed_command(value))
+
+        for item in self._items:
+            cmds.menuItem("itm_{}_{}".format(self._name, item), l=item)
+
+
+    def toggle(self, value):
+        self._toggle_command(value)
+        cmds.control("cmb_{}".format(self._name), e=True, en=value)

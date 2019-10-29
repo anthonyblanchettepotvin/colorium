@@ -8,6 +8,11 @@ class AssetManagementToolUI(CUI.CUI):
     def build_ui(self):
         self.build_asset_information_section()
         self.build_save_options_section()
+        self.build_publish_options_section()
+        self.build_export_options_section()
+        self.build_file_name_preview_section()
+        self.build_path_preview_section()
+        self.build_actions_section()
 
 
     def build_asset_information_section(self):
@@ -15,63 +20,15 @@ class AssetManagementToolUI(CUI.CUI):
         Builds the asset information section.
         """
 
-        def build_combo_input(name, parent, enabled, items, changed_command, toggle_command):
-            """
-            Helper function that builds a base combo input for the asset information section.
-            """
-
-            lay_input = cmds.rowLayout("lay_{}".format(name), p=parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
-            cmds.checkBox("chk_{}".format(name), p=lay_input, l="", v=enabled, cc=lambda value: _toggle(value))
-            cmds.text("lbl_{}".format(name), p=lay_input, l="Asset {}:".format(name), al="right")
-            cmds.optionMenu("cmb_{}".format(name), p=lay_input, en=enabled, cc=lambda value: changed_command(value))
-
-            for item in items:
-                cmds.menuItem("itm_{}_{}".format(name, item), l=item)
-
-            def _toggle(value):
-                toggle_command(value)
-                cmds.control("cmb_{}".format(name), e=True, en=value)
-
-
-        def build_text_input(name, parent, enabled, changed_command, toggle_command):
-            """
-            Helper function that builds a base text input for the asset information section.
-            """
-
-            lay_input = cmds.rowLayout("lay_{}".format(name), p=parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
-            cmds.checkBox("chk_{}".format(name), p=lay_input, l="", v=enabled, cc=lambda value: _toggle(value))
-            cmds.text("lbl_{}".format(name), p=lay_input, l="Asset {}:".format(name), al="right")
-            cmds.textField("txt_{}".format(name), p=lay_input, en=enabled, tcc=lambda value: changed_command(value))
-
-            def _toggle(value):
-                toggle_command(value)
-                cmds.control("txt_{}".format(name), e=True, en=value)
-
-
-        def build_int_input(name, parent, enabled, min, max, changed_command, toggle_command):
-            """
-            Helper function that builds a base int input for the asset information section.
-            """
-
-            lay_input = cmds.rowLayout("lay_{}".format(name), p=parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
-            cmds.checkBox("chk_{}".format(name), p=lay_input, l="", v=enabled, cc=lambda value: _toggle(value))
-            cmds.text("lbl_{}".format(name), p=lay_input, l="Asset {}:".format(name), al="right")
-            cmds.intSliderGrp("int_{}".format(name), p=lay_input, f=True, min=min, max=max, en=enabled, cc=lambda value: changed_command(value))
-
-            def _toggle(value):
-                toggle_command(value)
-                cmds.control("int_{}".format(name), e=True, en=value)
-
-
         frm_asset_information = cmds.frameLayout("frm_asset_information", l="Asset Information", p=self.main_layout, mh=5, mw=5)
 
-        build_combo_input("type", frm_asset_information, True, assetTypeDefinition.names(), self.controller.set_asset_type, self.controller.set_asset_hasType)
-        build_text_input("name", frm_asset_information, True, self.controller.set_asset_name, self.controller.set_asset_hasName)
-        build_int_input("variant", frm_asset_information, self.controller.asset.hasVariant, 1, 99, self.controller.set_asset_variant, self.controller.set_asset_hasVariant)
-        build_int_input("scene", frm_asset_information, self.controller.asset.hasScene, 0, 995, self.controller.set_asset_scene, self.controller.set_asset_hasScene)
-        build_int_input("shot", frm_asset_information, self.controller.asset.hasShot, 0, 995, self.controller.set_asset_shot, self.controller.set_asset_hasShot)
-        build_int_input("version", frm_asset_information, True, 1, 99, self.controller.set_asset_version, self.controller.set_asset_hasVersion)
-
+        CUI.CComboInput("type", frm_asset_information, True, assetTypeDefinition.names(), self.controller.set_asset_type, self.controller.set_asset_hasType, True)
+        CUI.CTextInput("name", frm_asset_information, True, self.controller.set_asset_name, self.controller.set_asset_hasName, True)
+        CUI.CIntInput("variant", frm_asset_information, self.controller.asset.hasVariant, 1, 99, self.controller.set_asset_variant, self.controller.set_asset_hasVariant, True)
+        CUI.CIntInput("scene", frm_asset_information, self.controller.asset.hasScene, 0, 995, self.controller.set_asset_scene, self.controller.set_asset_hasScene, True)
+        CUI.CIntInput("shot", frm_asset_information, self.controller.asset.hasShot, 0, 995, self.controller.set_asset_shot, self.controller.set_asset_hasShot, True)
+        CUI.CIntInput("version", frm_asset_information, True, 1, 99, self.controller.set_asset_version, self.controller.set_asset_hasVersion, True)
+        
 
     def build_save_options_section(self):
         """
@@ -80,6 +37,46 @@ class AssetManagementToolUI(CUI.CUI):
 
         frm_save_options = cmds.frameLayout("frm_save_options", l="Save Options", p=self.main_layout, mh=5, mw=5)
 
+
+    def build_publish_options_section(self):
+        """
+        Builds the publish options section.
+        """
+
+        frm_publish_options = cmds.frameLayout("frm_publish_options", l="Publish Options", p=self.main_layout, mh=5, mw=5)
+
+
+    def build_export_options_section(self):
+        """
+        Builds the export options section.
+        """
+
+        frm_export_options = cmds.frameLayout("frm_export_options", l="Export Options", p=self.main_layout, mh=5, mw=5)
+
+    
+    def build_file_name_preview_section(self):
+        """
+        Builds the file name preview section.
+        """
+
+        frm_file_name_preview = cmds.frameLayout("frm_file_name_preview", l="File Name Preview", p=self.main_layout, mh=5, mw=5)
+
+    
+    def build_path_preview_section(self):
+        """
+        Builds the path preview section.
+        """
+
+        frm_path_preview = cmds.frameLayout("frm_path_preview", l="Path Preview", p=self.main_layout, mh=5, mw=5)
+    
+    
+    def build_actions_section(self):
+        """
+        Builds the actions section.
+        """
+
+        frm_actions = cmds.frameLayout("frm_actions", l="Actions", p=self.main_layout, mh=5, mw=5)
+        
 
 class AssetManagementToolController(CUI.CController):
     @property
