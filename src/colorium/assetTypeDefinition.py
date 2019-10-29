@@ -139,3 +139,8 @@ def names():
         names.append(assetType.name)
 
     return names
+
+def getTypeByName(name):
+    for type in assetTypes:
+        if type.name == name:
+            return type
