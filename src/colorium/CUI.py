@@ -175,12 +175,35 @@ class CBindable():
         NotImplemented
 
 
-class CControl(object, CBindable):
-    def __init__(self, name, parent):
-        self._bindings = []
-
+class CUIElement(object):
+    def __init__(self, name, title, parent):
         self._name = name
+        self._title = title
         self._parent = parent
+
+
+class CCLayout(CUIElement):
+    def __init__(self, name, title, parent, childrens=[]):
+        super(CCLayout, self).__init__(name, title, parent)
+
+        self._childrens = childrens
+
+    
+    def add_children(self, children):
+        if children not in self._childrens:
+            self._childrens.append(children)
+
+
+    def remove_children(self, children):
+        if children in self._childrens:
+            self._childrens.remove(children)
+
+
+class CControl(CUIElement, CBindable):
+    def __init__(self, name, title, parent):
+        super(CControl, self).__init__(name, title, parent)
+
+        self._bindings = []
 
 
     def build_ui(self):
@@ -211,8 +234,8 @@ class CControl(object, CBindable):
 
 
 class CTextInput(CControl, CToggleable):
-    def __init__(self, name, parent, enabled=True, changed_command=None, toggle_command=None, toggle=False):
-        super(CTextInput, self).__init__(name, parent)
+    def __init__(self, name, title, parent, enabled=True, changed_command=None, toggle_command=None, toggle=False):
+        super(CTextInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
         self._changed_command = changed_command
@@ -228,7 +251,7 @@ class CTextInput(CControl, CToggleable):
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
-        cmds.text("lbl_{}".format(self._name), p=layout, l="Asset {}:".format(self._name), al="right")
+        cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
         cmds.textField("txt_{}".format(self._name), p=layout, en=self._enabled, tcc=lambda value: self._changed_command(value))
 
 
@@ -248,8 +271,8 @@ class CTextInput(CControl, CToggleable):
 
 
 class CIntInput(CControl, CToggleable):
-    def __init__(self, name, parent, enabled=True, min=1, max=10, changed_command=None, toggle_command=None, toggle=False):
-        super(CIntInput, self).__init__(name, parent)
+    def __init__(self, name, title, parent, enabled=True, min=1, max=10, changed_command=None, toggle_command=None, toggle=False):
+        super(CIntInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
         self._min = min
@@ -267,7 +290,7 @@ class CIntInput(CControl, CToggleable):
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
-        cmds.text("lbl_{}".format(self._name), p=layout, l="Asset {}:".format(self._name), al="right")
+        cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
         cmds.intSliderGrp("int_{}".format(self._name), p=layout, f=True, min=self._min, max=self._max, en=self._enabled, cc=lambda value: self._changed_command(value))
 
 
@@ -287,8 +310,8 @@ class CIntInput(CControl, CToggleable):
 
 
 class CComboInput(CControl, CToggleable):
-    def __init__(self, name, parent, enabled=True, items=[], changed_command=None, toggle_command=None, toggle=False):
-        super(CComboInput, self).__init__(name, parent)
+    def __init__(self, name, title, parent, enabled=True, items=[], changed_command=None, toggle_command=None, toggle=False):
+        super(CComboInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
         self._items = items
@@ -305,7 +328,7 @@ class CComboInput(CControl, CToggleable):
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
-        cmds.text("lbl_{}".format(self._name), p=layout, l="Asset {}:".format(self._name), al="right")
+        cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
         cmds.optionMenu("cmb_{}".format(self._name), p=layout, en=self._enabled, cc=lambda value: self._changed_command(value))
 
         for item in self._items:
@@ -328,8 +351,8 @@ class CComboInput(CControl, CToggleable):
 
 
 class CFilePathInput(CControl, CToggleable):
-    def __init__(self, name, parent, enabled=True, changed_command=None, toggle_command=None, toggle=False):
-        super(CFilePathInput, self).__init__(name, parent)
+    def __init__(self, name, title, parent, enabled=True, changed_command=None, toggle_command=None, toggle=False):
+        super(CFilePathInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
         self._changed_command = changed_command
@@ -345,9 +368,9 @@ class CFilePathInput(CControl, CToggleable):
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
-        cmds.text("lbl_{}".format(self._name), p=layout, l="{} Path:".format(self._name.title()), al="right")
+        cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
         cmds.textField("txt_{}".format(self._name), p=layout, en=self._enabled, tcc=lambda value: self._changed_command(value))
-        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open")
+        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60)
 
 
     def toggle(self, value):
@@ -363,3 +386,56 @@ class CFilePathInput(CControl, CToggleable):
         elif topic == "has{}".format(self._name.title()) and self._toggle:
             cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
             cmds.control("txt_{}".format(self._name), e=True, en=value)
+
+
+class CInlineLayout(CCLayout):
+    def __init__(self, name, title, parent, childrens=[], align="left"):
+        super(CInlineLayout, self).__init__(name, title, parent)
+
+        self._childrens = childrens
+        self._align = align
+
+
+    def build_ui(self):
+        align_offset = 0
+        align_adjustement_column = len(self._childrens) + 1
+        if self._align == "right":
+            align_offset = 1
+            align_adjustement_column = 1
+
+        column_attachments = []
+        for children in range(1 + align_offset, len(self._childrens) + 1 + align_offset):
+            if children == 1 + align_offset:
+                column_attachments.append((children, "right", 2.5))
+            elif children == len(self._childrens) + align_offset:
+                column_attachments.append((children, "left", 2.5))
+            else:
+                column_attachments.append((children, "both", 2.5))
+
+        layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=len(self._childrens) + 1, cat=column_attachments, adj=align_adjustement_column)
+
+        if self._align == "right":
+            cmds.separator("sep_{}".format(self._name), vis=False)
+
+        if self._childrens:
+            for children in self._childrens:
+                children._parent = layout
+                children.build_ui()
+
+        if self._align == "left":
+            cmds.separator("sep_{}".format(self._name), vis=False)
+
+
+class CButtonControl(CControl):
+    def __init__(self, name, title, parent, command=None):
+        super(CButtonControl, self).__init__(name, title, parent)
+
+        self._command = command
+
+
+    def build_ui(self):
+        cmds.button("btn_{}".format(self._name), l=self._title, p=self._parent, w=60, c=self._command)
+
+
+    def update(self, topic, value):
+        pass
