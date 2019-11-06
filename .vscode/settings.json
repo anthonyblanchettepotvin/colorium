@@ -6,7 +6,7 @@
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.pythonPath": "C:\\Program Files\\Autodesk\\Maya2018\\bin\\mayapy.exe",
+    "python.pythonPath": "C:\\Program Files\\Autodesk\\Maya2019\\bin\\mayapy.exe",
     "python.autoComplete.extraPaths": [
         "C:\\Users\\Anthony\\.vscode\\extensions\\fxtd-odyssey.mayapy-1.0.4\\mayaSDK"
     ],

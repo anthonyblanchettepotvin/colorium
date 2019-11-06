@@ -274,7 +274,7 @@ class ColoriumAssetManagementToolUI:
     BUTTON_SECTION_FRAME_NAME = "buttonSectionFrame"
     BUTTON_SECTION_FRAME_TEXT = "Button Section"
     BUTTON_SECTION_LAYOUT_NAME = "buttonSectionLayout"
-    BUTTON_SECTION_LAYOUT_COLUMN_COUNT = 5
+    BUTTON_SECTION_LAYOUT_COLUMN_COUNT = 6
     def createButtonSectionLayout(self, parent):
         frame = cmds.frameLayout(self.BUTTON_SECTION_FRAME_NAME, p=parent, l=self.BUTTON_SECTION_FRAME_TEXT)
         return cmds.rowLayout(self.BUTTON_SECTION_LAYOUT_NAME, p=frame, nc=self.BUTTON_SECTION_LAYOUT_COLUMN_COUNT, adj=True)
@@ -286,6 +286,7 @@ class ColoriumAssetManagementToolUI:
         self.createOpenButton(parent)
         self.createCreateButton(parent)
         self.createCommitButton(parent)
+        self.createBatchPublishButton(parent)
 
     def createCancelButton(self, parent):
         cmds.button("cancelButton", l="Cancel", w=75, c=self._controller.cancelCommand)
@@ -298,6 +299,9 @@ class ColoriumAssetManagementToolUI:
 
     def createCommitButton(self, parent):
         cmds.button("commitButton", l="Commit", w=75, c=self._controller.commitCommand)
+
+    def createBatchPublishButton(self, parent):
+        cmds.button("batchPublishButton", l="Batch Publish", w=75, c=self._controller.batchPublishCommand)
 
     def createFileNamePreviewField(self, labelName="", labelText="", fieldName="", fieldValue="", config=None, configProperty=""):
         cmds.text(labelName, l=labelText, al="left")
@@ -540,6 +544,11 @@ class ColoriumAssetManagementToolController(Subject, Observer):
 
         if exportEnable:
             self.export()
+
+
+    def batchPublishCommand(self, *args):
+        pass
+
 
     def save(self):
         saveConfirmed = cmds.confirmDialog(

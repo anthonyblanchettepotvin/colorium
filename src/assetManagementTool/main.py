@@ -8,10 +8,10 @@ imports.dropCachedImports(
     "colorium"
 )
 
-# from assetManagementToolUI import ColoriumAssetManagementToolUI as UI
+from assetManagementToolUI import ColoriumAssetManagementToolUI as UI
 
-# ui = UI()
+ui = UI()
 
-import ui
+# import ui
 
-ui = ui.AssetManagementToolUI("Asset Management Tool", ui.AssetManagementToolController())
+# ui = ui.AssetManagementToolUI("Asset Management Tool", ui.AssetManagementToolController())
