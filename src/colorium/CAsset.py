@@ -1,4 +1,5 @@
 from colorium.CUI import CBindable
+from colorium.CConfiguration import SaveConfiguration, PublishConfiguration, ExportConfiguration
 import assetTypeDefinition
 
 class CAsset(object, CBindable):
@@ -121,8 +122,38 @@ class CAsset(object, CBindable):
         self._version = value
         self.notify("version", value)
 
+    
+    @property
+    def save_config(self):
+        return self._save_config
 
-    def __init__(self, hasType=False, type="non", hasName=False, name="", hasVariant=False, variant=1, hasScene=False, scene=10, hasShot=False, shot=10, hasVersion=False, version=1):
+    @save_config.setter
+    def save_config(self, value):
+        self._save_config = value
+        self.notify("save_config", value)
+
+
+    @property
+    def publish_config(self):
+        return self._publish_config
+
+    @publish_config.setter
+    def publish_config(self, value):
+        self._publish_config = value
+        self.notify("publish_config", value)
+
+
+    @property
+    def export_config(self):
+        return self._export_config
+
+    @export_config.setter
+    def export_config(self, value):
+        self._export_config = value
+        self.notify("export_config", value)
+
+
+    def __init__(self, hasType=False, type="None", hasName=False, name="unamed", hasVariant=False, variant=1, hasScene=False, scene=10, hasShot=False, shot=10, hasVersion=False, version=1, save_config=None, publish_config=None, export_config=None):
         self._bindings = []
         
         self._hasType = hasType
@@ -138,6 +169,21 @@ class CAsset(object, CBindable):
         self._hasVersion = hasVersion
         self._version = version
 
+        if save_config:
+            self._save_config = save_config
+        else:
+            self._save_config = SaveConfiguration("save", self)
+
+        if publish_config:
+            self._publish_config = publish_config
+        else:  
+            self._publish_config = PublishConfiguration("publish", self)
+
+        if export_config:
+            self._export_config = export_config
+        else:
+            self._export_config = ExportConfiguration("export", self)
+
 
     def bind(self, bindable):
         if bindable not in self._bindings:
@@ -150,6 +196,10 @@ class CAsset(object, CBindable):
 
 
     def notify(self, topic, value):
+        self._save_config.update(topic, value)
+        self._publish_config.update(topic, value)
+        self._export_config.update(topic, value)
+
         for bindable in self._bindings:
             bindable.update(topic, value)
 
