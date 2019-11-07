@@ -25,9 +25,7 @@ def parseTypeValueFromSceneName(sceneName):
     type = _namingConvention.searchTypeInSceneName(sceneName)
     
     if type != None:
-        for assetType in assetTypeDefinition.assetTypes:
-                if assetType.code == type:
-                    _assetData.type = assetType
+        _assetData.type = type
 
 
 def parseNameValueFromSceneName(sceneName):

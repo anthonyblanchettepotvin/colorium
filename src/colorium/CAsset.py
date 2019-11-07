@@ -157,7 +157,7 @@ class CAsset(object, CBindable):
         self._bindings = []
         
         self._hasType = hasType
-        self._type = assetTypeDefinition.getTypeByName(type)
+        self._type = type
         self._hasName = hasName
         self._name = name
         self._hasVariant = hasVariant
