@@ -1,13 +1,7 @@
 
 
 # Module classes
-class AssetTypeDefinition:
-    _code = ""
-    _name = ""
-    _saveDir = ""
-    _publishDir = ""
-    _exportDir = ""
-
+class AssetTypeDefinition(object):
     @property
     def code(self):
         return self._code

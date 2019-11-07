@@ -277,8 +277,8 @@ class CTextInput(CControl, CToggleable):
         super(CTextInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
-        self._changed_command = changed_command
-        self._toggle_command = toggle_command
+        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
         self._toggle = toggle
         self._default_value = default_value
 
@@ -317,8 +317,8 @@ class CIntInput(CControl, CToggleable):
         self._enabled = enabled
         self._min = min
         self._max = max
-        self._changed_command = changed_command
-        self._toggle_command = toggle_command
+        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
         self._toggle = toggle
         self._default_value = default_value
 
@@ -356,8 +356,8 @@ class CComboInput(CControl, CToggleable):
 
         self._enabled = enabled
         self._items = items
-        self._changed_command = changed_command
-        self._toggle_command = toggle_command
+        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
         self._toggle = toggle
         self._default_value = default_value
 
@@ -400,8 +400,8 @@ class CFilePathInput(CControl, CToggleable):
         super(CFilePathInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
-        self._changed_command = changed_command
-        self._toggle_command = toggle_command
+        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
         self._toggle = toggle
         self._default_value = default_value
 
@@ -438,7 +438,7 @@ class CButtonControl(CControl):
     def __init__(self, name, title, parent, command=None):
         super(CButtonControl, self).__init__(name, title, parent)
 
-        self._command = command
+        self._command = command if command else lambda value: NotImplemented
 
 
     def build_ui(self):
