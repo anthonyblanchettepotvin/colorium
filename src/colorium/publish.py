@@ -2,7 +2,8 @@ import os
 import maya.cmds as cmds
 from abc import ABCMeta, abstractmethod, abstractproperty
 from command import Command
-from configuration import Configuration
+from CConfiguration import CConfiguration
+import CSceneNameParser
 
 
 # Module classes

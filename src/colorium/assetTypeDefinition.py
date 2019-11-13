@@ -31,9 +31,9 @@ class AssetTypeDefinition(object):
 
 
 # Module functionnalities
-SAVE_BASE_PATH = "C:/Users/apotvin/Desktop/project/maya/scenes"
-PUBLISH_BASE_PATH = "C:/Users/apotvin/Desktop/project/maya/assets"
-EXPORT_PATH = "C:/Users/apotvin/Desktop/project/exports/maya"
+SAVE_BASE_PATH = "Y:/project/maya_work/scenes"
+PUBLISH_BASE_PATH = "Y:/project/maya_work/assets"
+EXPORT_PATH = "Y:/project/exports/maya"
 
 assetTypes = []
 
@@ -118,6 +118,15 @@ testType = AssetTypeDefinition(
 )
 assetTypes.append(testType)
 
+kitType = AssetTypeDefinition(
+    code="kit",
+    name="Kit",
+    saveDir=SAVE_BASE_PATH + "/kits",
+    publishDir=PUBLISH_BASE_PATH + "/kits",
+    exportDir=EXPORT_PATH + "/kits"
+)
+assetTypes.append(kitType)
+
 def codes():
     codes = []
 
@@ -125,6 +134,7 @@ def codes():
         codes.append(assetType.code)
 
     return codes
+
 
 def names():
     names = []
@@ -134,7 +144,18 @@ def names():
 
     return names
 
+
 def getTypeByName(name):
     for type in assetTypes:
         if type.name == name:
             return type
+
+    return noneType
+
+
+def getTypeByCode(code):
+    for type in assetTypes:
+        if type.code == code:
+            return type
+
+    return noneType

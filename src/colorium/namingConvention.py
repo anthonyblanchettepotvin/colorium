@@ -69,7 +69,7 @@ class NamingConvention:
             return None
 
 def generateFileNameForSavedAsset(assetData):
-    asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
     template = "{type}_{name}_"
     
@@ -93,7 +93,7 @@ def generateFileNameForSavedAsset(assetData):
     ).replace("__", "_")
 
 def generateFileNameForPublishedAsset(assetData):
-    asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
     template = "{type}_{name}_"
     
@@ -116,7 +116,7 @@ def generateFileNameForPublishedAsset(assetData):
     ).replace("__", "_")
 
 def generateFileNameForExportedAsset(assetData):
-    asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
     template = "{type}_{name}_"
     
@@ -139,7 +139,7 @@ def generateFileNameForExportedAsset(assetData):
     ).replace("__", "_")
 
 def generatePathForSavedAsset(assetData):
-    asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
     template = "{saveDir}/"
 
@@ -163,7 +163,7 @@ def generatePathForSavedAsset(assetData):
     ).replace("//", "/")
 
 def generatePathForPublishedAsset(assetData):
-    asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
     template = "{publishDir}/"
     
@@ -177,7 +177,7 @@ def generatePathForPublishedAsset(assetData):
     ).replace("//", "/")
 
 def generatePathForExportedAsset(assetData):
-    asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
     template = "{exportDir}/"
 

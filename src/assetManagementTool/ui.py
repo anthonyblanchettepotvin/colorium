@@ -277,7 +277,7 @@ class AssetManagementToolController(CUI.CController):
 
 
     def set_asset_type(self, value):
-        self.asset.type = value
+        self.asset.type = assetTypeDefinition.getTypeByName(value).code
         print self.asset.type
 
 
