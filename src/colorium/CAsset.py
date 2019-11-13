@@ -153,7 +153,7 @@ class CAsset(object, CBindable):
         self.notify("export_config", value)
 
 
-    def __init__(self, hasType=False, type="None", hasName=False, name="unamed", hasVariant=False, variant=1, hasScene=False, scene=10, hasShot=False, shot=10, hasVersion=False, version=1, save_config=None, publish_config=None, export_config=None):
+    def __init__(self, hasType=False, type="non", hasName=False, name="unamed", hasVariant=False, variant=1, hasScene=False, scene=10, hasShot=False, shot=10, hasVersion=False, version=1, save_config=None, publish_config=None, export_config=None):
         self._bindings = []
         
         self._hasType = hasType

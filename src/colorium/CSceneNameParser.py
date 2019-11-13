@@ -10,6 +10,7 @@ _assetData = CAsset()
 
 def parseSceneName():
     sceneName = cmds.file(q=True, sn=True, shn=True)
+    sceneName.encode("ascii", "ignore")
     if sceneName:
         parseTypeValueFromSceneName(sceneName)
         parseNameValueFromSceneName(sceneName)
@@ -17,6 +18,19 @@ def parseSceneName():
         parseSceneValueFromSceneName(sceneName)
         parseShotValueFromSceneName(sceneName)
         parseVersionValueFromSceneName(sceneName)
+    
+    return _assetData
+
+
+def parseStringToAssetData(string):
+    string.encode("ascii", "ignore")
+    if string:
+        parseTypeValueFromSceneName(string)
+        parseNameValueFromSceneName(string)
+        parseVariantValueFromSceneName(string)
+        parseSceneValueFromSceneName(string)
+        parseShotValueFromSceneName(string)
+        parseVersionValueFromSceneName(string)
     
     return _assetData
     
