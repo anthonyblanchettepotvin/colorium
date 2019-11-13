@@ -1,4 +1,5 @@
 import re as regex
+import colorium.assetTypeDefinition as assetTypeDefinition
 
 class NamingConvention:
     variantPattern = r"(?<=_)\d{2}(?=_)"
@@ -68,6 +69,8 @@ class NamingConvention:
             return None
 
 def generateFileNameForSavedAsset(assetData):
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
     template = "{type}_{name}_"
     
     if assetData.hasVariant:
@@ -81,7 +84,7 @@ def generateFileNameForSavedAsset(assetData):
     template += "v{version:03d}"
         
     return template.format(
-        type=assetData.type.code,
+        type=asset_type_definition.code,
         name=assetData.name,
         variant=assetData.variant,
         scene=assetData.scene,
@@ -90,6 +93,8 @@ def generateFileNameForSavedAsset(assetData):
     ).replace("__", "_")
 
 def generateFileNameForPublishedAsset(assetData):
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
     template = "{type}_{name}_"
     
     if assetData.hasVariant:
@@ -103,7 +108,7 @@ def generateFileNameForPublishedAsset(assetData):
     template += "publish"
         
     return template.format(
-        type=assetData.type.code,
+        type=asset_type_definition.code,
         name=assetData.name,
         variant=assetData.variant,
         scene=assetData.scene,
@@ -111,6 +116,8 @@ def generateFileNameForPublishedAsset(assetData):
     ).replace("__", "_")
 
 def generateFileNameForExportedAsset(assetData):
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
     template = "{type}_{name}_"
     
     if assetData.hasVariant:
@@ -124,7 +131,7 @@ def generateFileNameForExportedAsset(assetData):
     template += "export"
 
     return template.format(
-        type=assetData.type.code,
+        type=asset_type_definition.code,
         name=assetData.name,
         variant=assetData.variant,
         scene=assetData.scene,
@@ -132,6 +139,8 @@ def generateFileNameForExportedAsset(assetData):
     ).replace("__", "_")
 
 def generatePathForSavedAsset(assetData):
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
     template = "{saveDir}/"
 
     if assetData.hasScene and assetData.hasShot:
@@ -145,8 +154,8 @@ def generatePathForSavedAsset(assetData):
         template += "{variant:02d}/"
         
     return template.format(
-        saveDir=assetData.type.saveDir,
-        type=assetData.type.code,
+        saveDir=asset_type_definition.saveDir,
+        type=asset_type_definition.code,
         scene=assetData.scene,
         shot=assetData.shot,
         name=assetData.name,
@@ -154,11 +163,13 @@ def generatePathForSavedAsset(assetData):
     ).replace("//", "/")
 
 def generatePathForPublishedAsset(assetData):
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
     template = "{publishDir}/"
     
     return template.format(
-        publishDir=assetData.type.publishDir,
-        type=assetData.type.code,
+        publishDir=asset_type_definition.publishDir,
+        type=asset_type_definition.code,
         scene=assetData.scene,
         shot=assetData.shot,
         name=assetData.name,
@@ -166,6 +177,8 @@ def generatePathForPublishedAsset(assetData):
     ).replace("//", "/")
 
 def generatePathForExportedAsset(assetData):
+    asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
     template = "{exportDir}/"
 
     if assetData.hasScene and assetData.hasShot:
@@ -179,8 +192,8 @@ def generatePathForExportedAsset(assetData):
         template += "{variant:02d}/"
     
     return template.format(
-        exportDir=assetData.type.exportDir,
-        type=assetData.type.code,
+        exportDir=asset_type_definition.exportDir,
+        type=asset_type_definition.code,
         scene=assetData.scene,
         shot=assetData.shot,
         name=assetData.name,
