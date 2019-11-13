@@ -1,13 +1,7 @@
 
 
 # Module classes
-class AssetTypeDefinition:
-    _code = ""
-    _name = ""
-    _saveDir = ""
-    _publishDir = ""
-    _exportDir = ""
-
+class AssetTypeDefinition(object):
     @property
     def code(self):
         return self._code
@@ -139,3 +133,8 @@ def names():
         names.append(assetType.name)
 
     return names
+
+def getTypeByName(name):
+    for type in assetTypes:
+        if type.name == name:
+            return type

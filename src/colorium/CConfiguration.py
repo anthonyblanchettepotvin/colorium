@@ -1,12 +1,22 @@
 from abc import ABCMeta, abstractmethod, abstractproperty
 from patterns.observerPattern import Subject, Observer
-from assetData import AssetData
-from configurationParameter import ConfigurationParameter
+from colorium.CUI import CBindable
 import namingConvention
 
 
-class Configuration(Subject, Observer):
+class CConfiguration(object, CBindable):
     _metaclass_ = ABCMeta
+
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+        self.notify("{}_name".format(self.name), value)
+
 
     @property
     def fileNameOverridden(self):
@@ -15,6 +25,8 @@ class Configuration(Subject, Observer):
     @fileNameOverridden.setter
     def fileNameOverridden(self, value):
         self._fileNameOverridden = value
+        self.notify("{}_file_name_overridden".format(self.name), value)
+
 
     @property
     def fileName(self):
@@ -23,16 +35,8 @@ class Configuration(Subject, Observer):
     @fileName.setter
     def fileName(self, value):
         self._fileName = value
-        self.notify()
+        self.notify("{}_file_name".format(self.name), value)
 
-    # @property
-    # def fileExtension(self):
-    #     return self._fileExtension
-
-    # @fileExtension.setter
-    # def fileExtension(self, value):
-    #     self._fileExtension = value
-    #     self.notify()
 
     @property
     def pathOverridden(self):
@@ -41,6 +45,8 @@ class Configuration(Subject, Observer):
     @pathOverridden.setter
     def pathOverridden(self, value):
         self._pathOverridden = value
+        self.notify("{}_path_overridden".format(self.name), value)
+
 
     @property
     def path(self):
@@ -49,7 +55,8 @@ class Configuration(Subject, Observer):
     @path.setter
     def path(self, value):
         self._path = value
-        self.notify()
+        self.notify("{}_path".format(self.name), value)
+
 
     @property
     def assetData(self):
@@ -58,7 +65,8 @@ class Configuration(Subject, Observer):
     @assetData.setter
     def assetData(self, value):
         self._assetData = value
-        self.notify()
+        self.notify("{}_asset_data".format(self.name), value)
+
 
     @property
     def command(self):
@@ -67,70 +75,59 @@ class Configuration(Subject, Observer):
     @command.setter
     def command(self, value):
         self._command = value
-        self.notify()
+        self.notify("{}_command".format(self.name), value)
     
-    def __init__(self, assetData):
-        self._observers = []
+
+    def __init__(self, name, asset_data):
+        self._bindings = []
+
+        self._name = name
         self._fileNameOverridden = False
         self._fileName = ""
         self._pathOverridden = False
         self._path = ""
-        self._parameters = None
+        self._assetData = asset_data
         self._command = None
-        self._assetData = assetData
 
         self.updateFileName()
         self.updatePath()
 
-        self._assetData.attach(self)
 
-    def attach(self, observer):
-        self._observers.append(observer)
+    def bind(self, bindable):
+        if bindable not in self._bindings:
+            self._bindings.append(bindable)
 
-    def attachAndNotify(self, observer):
-        self.attach(observer)
-        self.notify()
+        
+    def unbind(self, bindable):
+        if bindable in self._bindings:
+            self._bindings.remove(bindable)
 
-    def detach(self, observer):
-        self._observers.remove(observer)
 
-    @abstractmethod
-    def notify(self, *args):
-        pass
+    def notify(self, topic, value):
+        for bindable in self._bindings:
+            bindable.update(topic, value)
 
-    def clearObservers(self):
-        self._observers = []
 
-    def update(self, *args):
+    def update(self, topic, value):
         self.updateFileName()
         self.updatePath()
 
-    def appendParameter(self, name, value):
-        parameter = ConfigurationParameter(name, value)
-        self._parameters.append(parameter)
-
-    def removeParameter(self, name):
-        for parameter in self._parameters:
-            if parameter.name == name:
-                self._parameters.remove(parameter)
 
     @abstractmethod
     def updateFileName(self):
         pass
     
+
     @abstractmethod
     def updatePath(self):
         pass
+    
 
     def executeCommand(self):
         self._command.execute(self)
 
 
-class SaveConfiguration(Configuration):
-    def notify(self, *args):
-        for observer in self._observers:
-            observer.update("saveConfig")
-
+class SaveConfiguration(CConfiguration):
     def updateFileName(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
@@ -140,11 +137,7 @@ class SaveConfiguration(Configuration):
             self.path = namingConvention.generatePathForSavedAsset(self.assetData)
 
 
-class PublishConfiguration(Configuration):
-    def notify(self, *args):
-        for observer in self._observers:
-            observer.update("publishConfig")
-
+class PublishConfiguration(CConfiguration):
     def updateFileName(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForPublishedAsset(self.assetData)
@@ -154,11 +147,7 @@ class PublishConfiguration(Configuration):
             self.path = namingConvention.generatePathForPublishedAsset(self.assetData)
 
 
-class ExportConfiguration(Configuration):
-    def notify(self, *args):
-        for observer in self._observers:
-            observer.update("exportConfig")
-
+class ExportConfiguration(CConfiguration):
     def updateFileName(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForExportedAsset(self.assetData)
@@ -168,11 +157,7 @@ class ExportConfiguration(Configuration):
             self.path = namingConvention.generatePathForExportedAsset(self.assetData)
 
 
-class OpenConfiguration(Configuration):
-    def notify(self, *args):
-        for observer in self._observers:
-            observer.update("openConfig")
-
+class OpenConfiguration(CConfiguration):
     def updateFileName(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
@@ -182,11 +167,7 @@ class OpenConfiguration(Configuration):
             self.path = namingConvention.generatePathForSavedAsset(self.assetData)
 
 
-class CreateConfiguration(Configuration):
-    def notify(self, *args):
-        for observer in self._observers:
-            observer.update("createConfig")
-
+class CreateConfiguration(CConfiguration):
     def updateFileName(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
