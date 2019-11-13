@@ -292,7 +292,7 @@ class CTextInput(CControl, CToggleable):
             cmds.separator("sep_{}".format(self._name), vis=False)
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
-        cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, tcc=lambda value: self._changed_command(value))
+        cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, cc=lambda value: self._changed_command(value))
 
 
     def toggle(self, value):
@@ -396,11 +396,12 @@ class CComboInput(CControl, CToggleable):
 
 
 class CFilePathInput(CControl, CToggleable):
-    def __init__(self, name, title, parent, enabled=True, changed_command=None, toggle_command=None, toggle=False, default_value=""):
+    def __init__(self, name, title, parent, enabled=True, changed_command=None, open_command=None, toggle_command=None, toggle=False, default_value=""):
         super(CFilePathInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
         self._changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self._open_command = open_command if open_command else lambda value: NotImplemented
         self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
         self._toggle = toggle
         self._default_value = default_value
@@ -416,7 +417,7 @@ class CFilePathInput(CControl, CToggleable):
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
         cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, tcc=lambda value: self._changed_command(value))
-        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60)
+        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60, c=self._open_command)
 
 
     def toggle(self, value):

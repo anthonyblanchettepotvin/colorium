@@ -6,6 +6,7 @@ import colorium.CSceneNameParser as CSceneNameParser
 import colorium.save as save
 import colorium.publish as publish
 import colorium.export as export
+import colorium.CCommand as CCommand
 
 
 class AssetManagementToolUI(CUI.CUI):
@@ -150,6 +151,7 @@ class AssetManagementToolUI(CUI.CUI):
             toggle=True,\
             toggle_command=self.controller.set_save_config_file_name_override,\
             default_value=self.controller.asset.save_config.fileName,\
+            changed_command=self.controller.set_save_config_file_name,\
         )
         self.controller.asset.save_config.bind(save_file_name_input)
         self.add_control(save_file_name_input)
@@ -159,6 +161,7 @@ class AssetManagementToolUI(CUI.CUI):
             toggle=True,\
             toggle_command=self.controller.set_publish_config_file_name_override,\
             default_value=self.controller.asset.publish_config.fileName,\
+            changed_command=self.controller.set_publish_config_file_name,\
         )
         self.controller.asset.publish_config.bind(publish_file_name_input)
         self.add_control(publish_file_name_input)
@@ -168,6 +171,7 @@ class AssetManagementToolUI(CUI.CUI):
             toggle=True,\
             toggle_command=self.controller.set_export_config_file_name_override,\
             default_value=self.controller.asset.export_config.fileName,\
+            changed_command=self.controller.set_export_config_file_name,\
         )
         self.controller.asset.export_config.bind(export_file_name_input)
         self.add_control(export_file_name_input)
@@ -185,6 +189,8 @@ class AssetManagementToolUI(CUI.CUI):
             toggle=True,\
             toggle_command=self.controller.set_save_config_path_override,\
             default_value=self.controller.asset.save_config.path,\
+            open_command=self.controller.open_save_path_explorer,\
+            changed_command=self.controller.set_save_config_path,\
         )
         self.controller.asset.save_config.bind(save_path_input)
         self.add_control(save_path_input)
@@ -194,6 +200,8 @@ class AssetManagementToolUI(CUI.CUI):
             toggle=True,\
             toggle_command=self.controller.set_publish_config_path_override,\
             default_value=self.controller.asset.publish_config.path,\
+            open_command=self.controller.open_publish_path_explorer,\
+            changed_command=self.controller.set_publish_config_path,\
         )
         self.controller.asset.publish_config.bind(publish_path_input)
         self.add_control(publish_path_input)
@@ -203,6 +211,8 @@ class AssetManagementToolUI(CUI.CUI):
             toggle=True,\
             toggle_command=self.controller.set_export_config_path_override,\
             default_value=self.controller.asset.export_config.path,\
+            open_command=self.controller.open_export_path_explorer,\
+            changed_command=self.controller.set_export_config_path,\
         )
         self.controller.asset.export_config.bind(export_path_input)
         self.add_control(export_path_input)
@@ -261,11 +271,13 @@ class AssetManagementToolController(CUI.CController):
 
     
     def open(self, value):
-        print("Open")
+        self.asset.save_config.command = CCommand.getCommand("open", "Scene")
+        self.asset.save_config.executeCommand()
 
 
     def create(self, value):
-        print("Create")
+        self.asset.save_config.command = CCommand.getCommand("create", "Blank Maya Ascii")
+        self.asset.save_config.executeCommand()
 
 
     def delete(self, value):
@@ -336,6 +348,36 @@ class AssetManagementToolController(CUI.CController):
         print self.asset.hasVersion
 
 
+    def set_save_config_file_name(self, value):
+        self.asset.save_config.fileName = value
+        print self.asset.save_config.fileName
+
+
+    def set_publish_config_file_name(self, value):
+        self.asset.publish_config.fileName = value
+        print self.asset.publish_config.fileName
+
+    
+    def set_export_config_file_name(self, value):
+        self.asset.export_config.fileName = value
+        print self.asset.export_config.fileName
+
+
+    def set_save_config_path(self, value):
+        self.asset.save_config.path = value
+        print self.asset.save_config.path
+
+
+    def set_publish_config_path(self, value):
+        self.asset.publish_config.path = value
+        print self.asset.publish_config.path
+
+    
+    def set_export_config_path(self, value):
+        self.asset.export_config.path = value
+        print self.asset.export_config.path
+
+
     def set_save_config_file_name_override(self, value):
         self.asset.save_config.fileNameOverridden = value
         print self.asset.save_config.fileNameOverridden
@@ -379,3 +421,18 @@ class AssetManagementToolController(CUI.CController):
     def set_export_config_command(self, value):
         self.asset.export_config.command = export.getCommandByName(value)
         print self.asset.export_config.command.name
+
+
+    def open_save_path_explorer(self, value):
+        self.asset.save_config.command = CCommand.getCommand("open", "Explorer")
+        self.asset.save_config.executeCommand()
+
+    
+    def open_publish_path_explorer(self, value):
+        self.asset.publish_config.command = CCommand.getCommand("open", "Explorer")
+        self.asset.publish_config.executeCommand()
+
+
+    def open_export_path_explorer(self, value):
+        self.asset.export_config.command = CCommand.getCommand("open", "Explorer")
+        self.asset.export_config.executeCommand()

@@ -155,6 +155,7 @@ class CAsset(object, CBindable):
 
     def __init__(self, hasType=False, type="non", hasName=False, name="unamed", hasVariant=False, variant=1, hasScene=False, scene=10, hasShot=False, shot=10, hasVersion=False, version=1, save_config=None, publish_config=None, export_config=None):
         self._bindings = []
+        self._notified_bindings = []
         
         self._hasType = hasType
         self._type = type
@@ -196,12 +197,31 @@ class CAsset(object, CBindable):
 
 
     def notify(self, topic, value):
-        self._save_config.update(topic, value)
-        self._publish_config.update(topic, value)
-        self._export_config.update(topic, value)
+        self.notify_save_config(value)
+        self.notify_publish_config(value)
+        self.notify_export_config(value)
 
         for bindable in self._bindings:
-            bindable.update(topic, value)
+            if bindable not in self._notified_bindings:
+                bindable.update(topic, value)
+                self._notified_bindings.append(bindable)
+
+        self._notified_bindings = []
+
+
+    def notify_save_config(self, value):
+        self._save_config.update("{}_file_name".format(self.save_config.name), value)
+        self._save_config.update("{}_path".format(self.save_config.name), value)
+
+
+    def notify_publish_config(self, value):
+        self._publish_config.update("{}_file_name".format(self.publish_config.name), value)
+        self._publish_config.update("{}_path".format(self.publish_config.name), value)
+
+
+    def notify_export_config(self, value):
+        self._export_config.update("{}_file_name".format(self.export_config.name), value)
+        self._export_config.update("{}_path".format(self.export_config.name), value)
 
 
     def update(self, topic, value):
