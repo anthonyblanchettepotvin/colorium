@@ -118,6 +118,14 @@ testType = AssetTypeDefinition(
 )
 assetTypes.append(testType)
 
+kitType = AssetTypeDefinition(
+    code="kit",
+    name="Kit",
+    saveDir=SAVE_BASE_PATH + "/kits",
+    publishDir=PUBLISH_BASE_PATH + "/kits",
+    exportDir=EXPORT_PATH + "/kits"
+)
+assetTypes.append(kitType)
 
 def codes():
     codes = []
@@ -142,8 +150,12 @@ def getTypeByName(name):
         if type.name == name:
             return type
 
+    return noneType
+
 
 def getTypeByCode(code):
     for type in assetTypes:
         if type.code == code:
             return type
+
+    return noneType
