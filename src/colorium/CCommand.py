@@ -93,7 +93,7 @@ def __openScene(config):
 
 
 def __createBlankMayaAscii(config):
-    if not os.path.exists(config.path + config.fileName + ".ma"):
+    if not os.path.exists(config.path):
         os.makedirs(config.path)
     else:
         cmds.confirmDialog(
@@ -112,6 +112,22 @@ def __createBlankMayaAscii(config):
 
     cmds.file(rn=config.path + config.fileName)
     cmds.file(s=True, typ="mayaAscii")
+
+
+def __saveMayaAscii(config):
+    if not os.path.exists(config.path):
+        os.makedirs(config.path)
+
+    cmds.file(rn=config.path + config.fileName)
+    cmds.file(s=True, typ="mayaAscii")
+
+
+def __saveMayaBinary(config):
+    if not os.path.exists(config.path):
+        os.makedirs(config.path)
+
+    cmds.file(rn=config.path + config.fileName)
+    cmds.file(s=True, typ="mayaBinary")
 
 
 def __publishMayaAscii(config):
@@ -150,6 +166,28 @@ def __publishMayaBinary(config):
     cmds.file(config.path + config.fileName, es=True, typ="mayaBinary")
 
 
+def __publishGeometryCache(config):
+    if not os.path.exists(config.path):
+        os.makedirs(config.path)
+
+    selection = cmds.ls(sl=True)
+    selected_shapes = cmds.listRelatives(selection, s=True)
+    if not selected_shapes:
+        cmds.confirmDialog(
+            title="Cannot publish asset",
+            message="The asset cannot be published. Please, select the geometry you want to publish.",
+            button=["Ok"],
+            defaultButton="Ok"
+        )
+
+        return
+                
+    start_frame = cmds.playbackOptions(q=True, ast=True)
+    end_frame = cmds.playbackOptions(q=True, aet=True)
+    
+    cmds.cacheFile(f=config.fileName, dir=config.path, pts=selected_shapes, st=start_frame, et=end_frame, r=True, ws=True, fm="OneFile", sch=True)
+
+
 def __exportMayaAscii(config):
     if not os.path.exists(config.path):
         os.makedirs(config.path)
@@ -186,12 +224,32 @@ def __exportMayaBinary(config):
     cmds.file(config.path + config.fileName, es=True, typ="mayaBinary")
 
 
+def __exportAlembic(config):
+    NotImplemented
+
+
+def __exportFBX(config):
+    NotImplemented
+
+
+def __exportOBJ(config):
+    NotImplemented
+
+
 commands = []
 commands.append(CConcreteCommand("open", "Explorer", __openExplorer))
 commands.append(CConcreteCommand("open", "Scene", __openScene))
 commands.append(CConcreteCommand("create", "Blank Maya Ascii", __createBlankMayaAscii))
+commands.append(CConcreteCommand("save", "Maya Ascii", __saveMayaAscii))
+commands.append(CConcreteCommand("save", "Maya Binary", __saveMayaBinary))
 commands.append(CConcreteCommand("publish", "Maya Ascii", __publishMayaAscii))
 commands.append(CConcreteCommand("publish", "Maya Binary", __publishMayaBinary))
+commands.append(CConcreteCommand("publish", "Geometry Cache", __publishGeometryCache))
+commands.append(CConcreteCommand("export", "Maya Ascii", __exportMayaAscii))
+commands.append(CConcreteCommand("export", "Maya Binary", __exportMayaBinary))
+commands.append(CConcreteCommand("export", "FBX", __exportFBX))
+commands.append(CConcreteCommand("export", "OBJ", __exportOBJ))
+commands.append(CConcreteCommand("export", "Alembic", __exportAlembic))
 
 
 def getCommandsByAction(action):
@@ -212,6 +270,16 @@ def getCommandsByName(name):
             commands_to_return.append(name)
 
     return commands_to_return
+
+
+def getCommandNamesByAction(action):
+    command_names_to_return = []
+
+    for command in commands:
+        if command.action == action:
+            command_names_to_return.append(command.name)
+
+    return command_names_to_return
 
 
 def getCommand(action, name):

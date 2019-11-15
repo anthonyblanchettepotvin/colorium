@@ -1,12 +1,10 @@
-import colorium.CUI as CUI
 import maya.cmds as cmds
-from colorium.CAsset import CAsset
+import colorium.CUI as CUI
 import colorium.assetTypeDefinition as assetTypeDefinition
 import colorium.CSceneNameParser as CSceneNameParser
-import colorium.save as save
-import colorium.publish as publish
-import colorium.export as export
 import colorium.CCommand as CCommand
+
+from colorium.CAsset import CAsset
 
 
 class AssetManagementToolUI(CUI.CUI):
@@ -31,7 +29,7 @@ class AssetManagementToolUI(CUI.CUI):
             enabled=True,\
             items=assetTypeDefinition.names(),\
             changed_command=self.controller.set_asset_type,\
-            default_value=self.controller.asset.type,\
+            default_value=assetTypeDefinition.getTypeByCode(self.controller.asset.type).name,\
         )
         self.controller.asset.bind(type_input)
         self.add_control(type_input)
@@ -100,7 +98,7 @@ class AssetManagementToolUI(CUI.CUI):
 
         save_input = CUI.CComboInput("save_type", "Save type", frm_save_options,\
             enabled=False,\
-            items=save.getNames(),\
+            items=CCommand.getCommandNamesByAction("save"),\
             toggle=True,\
             changed_command=self.controller.set_save_config_command,\
         )
@@ -116,7 +114,7 @@ class AssetManagementToolUI(CUI.CUI):
 
         publish_input = CUI.CComboInput("publish_type", "Publish type", frm_publish_options,\
             enabled=False,\
-            items=publish.getNames(),\
+            items=CCommand.getCommandNamesByAction("publish"),\
             toggle=True,\
             changed_command=self.controller.set_publish_config_command,\
         )
@@ -132,7 +130,7 @@ class AssetManagementToolUI(CUI.CUI):
 
         export_input = CUI.CComboInput("export_type", "Export type", frm_export_options,\
             enabled=False,\
-            items=export.getNames(),\
+            items=CCommand.getCommandNamesByAction("export"),\
             toggle=True,\
             changed_command=self.controller.set_export_config_command,\
         )
@@ -285,7 +283,18 @@ class AssetManagementToolController(CUI.CController):
 
 
     def commit(self, value):
-        print("Commit")
+        save_enabled = self.ui.get_control_by_name("save_type").is_toggled()
+        publish_enabled = self.ui.get_control_by_name("publish_type").is_toggled()
+        export_enabled = self.ui.get_control_by_name("export_type").is_toggled()
+
+        if save_enabled:
+            self.asset.save_config.executeCommand()
+
+        if publish_enabled:
+            self.asset.publish_config.executeCommand()
+
+        if export_enabled:
+            self.asset.export_config.executeCommand()
 
 
     def set_asset_type(self, value):
@@ -409,17 +418,17 @@ class AssetManagementToolController(CUI.CController):
 
 
     def set_save_config_command(self, value):
-        self.asset.save_config.command = save.getCommandByName(value)
+        self.asset.save_config.command = CCommand.getCommand("save", value)
         print self.asset.save_config.command.name
 
 
     def set_publish_config_command(self, value):
-        self.asset.publish_config.command = publish.getCommandByName(value)
+        self.asset.publish_config.command = CCommand.getCommand("publish", value)
         print self.asset.publish_config.command.name
 
 
     def set_export_config_command(self, value):
-        self.asset.export_config.command = export.getCommandByName(value)
+        self.asset.export_config.command = CCommand.getCommand("export", value)
         print self.asset.export_config.command.name
 
 

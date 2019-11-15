@@ -150,6 +150,13 @@ class CToggleable():
 
         NotImplemented
 
+    def is_toggled(self):
+        """
+        Returns the toggled value.
+        """
+
+        NotImplemented
+
 
 class CBindable():
     def bind(self, bindable):
@@ -301,6 +308,12 @@ class CTextInput(CControl, CToggleable):
         
         cmds.control("txt_{}".format(self._name), e=True, en=value)
 
+    
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
+
 
     def update(self, topic, value):
         if topic == self._name:
@@ -340,6 +353,12 @@ class CIntInput(CControl, CToggleable):
             self._toggle_command(value)
 
         cmds.control("int_{}".format(self._name), e=True, en=value)
+
+
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
 
 
     def update(self, topic, value):
@@ -387,6 +406,12 @@ class CComboInput(CControl, CToggleable):
         cmds.control("cmb_{}".format(self._name), e=True, en=value)
 
     
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
+
+
     def update(self, topic, value):
         if topic == self._name:
             cmds.optionMenu("cmb_{}".format(self._name), e=True, v=value)
@@ -425,6 +450,12 @@ class CFilePathInput(CControl, CToggleable):
             self._toggle_command(value)
         
         cmds.control("txt_{}".format(self._name), e=True, en=value)
+
+
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
 
 
     def update(self, topic, value):
