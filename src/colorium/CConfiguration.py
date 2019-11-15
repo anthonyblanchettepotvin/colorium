@@ -80,6 +80,7 @@ class CConfiguration(object, CBindable):
 
     def __init__(self, name, asset_data):
         self._bindings = []
+        self._notified_bindings = []
 
         self._name = name
         self._fileNameOverridden = False
@@ -89,8 +90,8 @@ class CConfiguration(object, CBindable):
         self._assetData = asset_data
         self._command = None
 
-        self.updateFileName()
-        self.updatePath()
+        self.update_file_name()
+        self.update_path()
 
 
     def bind(self, bindable):
@@ -105,21 +106,27 @@ class CConfiguration(object, CBindable):
 
     def notify(self, topic, value):
         for bindable in self._bindings:
-            bindable.update(topic, value)
+            if bindable not in self._notified_bindings:
+                bindable.update(topic, value)
+                self._notified_bindings.append(bindable)
+
+        self._notified_bindings = []
 
 
     def update(self, topic, value):
-        self.updateFileName()
-        self.updatePath()
+        if topic == "{}_file_name".format(self.name):
+            self.update_file_name()
+        elif topic == "{}_path".format(self.name):
+            self.update_path()
 
 
     @abstractmethod
-    def updateFileName(self):
+    def update_file_name(self):
         pass
     
 
     @abstractmethod
-    def updatePath(self):
+    def update_path(self):
         pass
     
 
@@ -128,50 +135,50 @@ class CConfiguration(object, CBindable):
 
 
 class SaveConfiguration(CConfiguration):
-    def updateFileName(self):
+    def update_file_name(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
 
-    def updatePath(self):
+    def update_path(self):
         if not self.pathOverridden:
             self.path = namingConvention.generatePathForSavedAsset(self.assetData)
 
 
 class PublishConfiguration(CConfiguration):
-    def updateFileName(self):
+    def update_file_name(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForPublishedAsset(self.assetData)
 
-    def updatePath(self):
+    def update_path(self):
         if not self.pathOverridden:
             self.path = namingConvention.generatePathForPublishedAsset(self.assetData)
 
 
 class ExportConfiguration(CConfiguration):
-    def updateFileName(self):
+    def update_file_name(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForExportedAsset(self.assetData)
 
-    def updatePath(self):
+    def update_path(self):
         if not self.pathOverridden:
             self.path = namingConvention.generatePathForExportedAsset(self.assetData)
 
 
 class OpenConfiguration(CConfiguration):
-    def updateFileName(self):
+    def update_file_name(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
 
-    def updatePath(self):
+    def update_path(self):
         if not self.pathOverridden:
             self.path = namingConvention.generatePathForSavedAsset(self.assetData)
 
 
 class CreateConfiguration(CConfiguration):
-    def updateFileName(self):
+    def update_file_name(self):
         if not self.fileNameOverridden:
             self.fileName = namingConvention.generateFileNameForSavedAsset(self.assetData)
 
-    def updatePath(self):
+    def update_path(self):
         if not self.pathOverridden:
             self.path = namingConvention.generatePathForSavedAsset(self.assetData)

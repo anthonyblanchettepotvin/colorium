@@ -150,6 +150,13 @@ class CToggleable():
 
         NotImplemented
 
+    def is_toggled(self):
+        """
+        Returns the toggled value.
+        """
+
+        NotImplemented
+
 
 class CBindable():
     def bind(self, bindable):
@@ -292,7 +299,7 @@ class CTextInput(CControl, CToggleable):
             cmds.separator("sep_{}".format(self._name), vis=False)
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
-        cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, tcc=lambda value: self._changed_command(value))
+        cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, cc=lambda value: self._changed_command(value))
 
 
     def toggle(self, value):
@@ -300,6 +307,12 @@ class CTextInput(CControl, CToggleable):
             self._toggle_command(value)
         
         cmds.control("txt_{}".format(self._name), e=True, en=value)
+
+    
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
 
 
     def update(self, topic, value):
@@ -340,6 +353,12 @@ class CIntInput(CControl, CToggleable):
             self._toggle_command(value)
 
         cmds.control("int_{}".format(self._name), e=True, en=value)
+
+
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
 
 
     def update(self, topic, value):
@@ -387,6 +406,12 @@ class CComboInput(CControl, CToggleable):
         cmds.control("cmb_{}".format(self._name), e=True, en=value)
 
     
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
+
+
     def update(self, topic, value):
         if topic == self._name:
             cmds.optionMenu("cmb_{}".format(self._name), e=True, v=value)
@@ -396,11 +421,12 @@ class CComboInput(CControl, CToggleable):
 
 
 class CFilePathInput(CControl, CToggleable):
-    def __init__(self, name, title, parent, enabled=True, changed_command=None, toggle_command=None, toggle=False, default_value=""):
+    def __init__(self, name, title, parent, enabled=True, changed_command=None, open_command=None, toggle_command=None, toggle=False, default_value=""):
         super(CFilePathInput, self).__init__(name, title, parent)
 
         self._enabled = enabled
         self._changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self._open_command = open_command if open_command else lambda value: NotImplemented
         self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
         self._toggle = toggle
         self._default_value = default_value
@@ -416,7 +442,7 @@ class CFilePathInput(CControl, CToggleable):
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
         cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, tcc=lambda value: self._changed_command(value))
-        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60)
+        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60, c=self._open_command)
 
 
     def toggle(self, value):
@@ -424,6 +450,12 @@ class CFilePathInput(CControl, CToggleable):
             self._toggle_command(value)
         
         cmds.control("txt_{}".format(self._name), e=True, en=value)
+
+
+    def is_toggled(self):
+        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
+
+        return value
 
 
     def update(self, topic, value):
