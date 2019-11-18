@@ -6,7 +6,6 @@ class CBinding():
     def obj(self):
         return self.__obj
 
-
     @obj.setter
     def obj(self, value):
         self.__obj = value
@@ -16,7 +15,6 @@ class CBinding():
     def obj_prop(self):
         return self.__obj_prop
 
-
     @obj_prop.setter
     def obj_prop(self, value):
         self.__obj_prop = value
@@ -25,7 +23,6 @@ class CBinding():
     @property
     def prop(self):
         return self.__prop
-
 
     @prop.setter
     def prop(self, value):
@@ -76,7 +73,6 @@ class CBindable():
     def notified(self):
         return self.__notified
 
-
     @notified.setter
     def notified(self, value):
         self.__notified = value
@@ -91,9 +87,14 @@ class CBindable():
         if not self.__bindings:
             self.__bindings.append(bind)
         else:
+            found = False
+
             for binding in self.__bindings:
-                if binding != bind:
-                    self.__bindings.append(binding)
+                if binding == bind:
+                    found = True
+
+            if not found:     
+                self.__bindings.append(bind)
 
 
     def remove_binding(self, bind):

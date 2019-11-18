@@ -1,8 +1,11 @@
-from colorium.CUI import CBindable
-from colorium.CConfiguration import SaveConfiguration, PublishConfiguration, ExportConfiguration
-import assetTypeDefinition
+from colorium.CConfiguration import CConfiguration
 
-class CAsset(object, CBindable):
+import assetTypeDefinition
+import colorium.CDataBinding as CDataBinding
+import namingConvention
+
+
+class CAsset(object, CDataBinding.CBindable):
     @property
     def hasType(self):
         return self._hasType
@@ -10,7 +13,9 @@ class CAsset(object, CBindable):
     @hasType.setter
     def hasType(self, value):
         self._hasType = value
-        self.notify("hasType", value)
+        self.notify_configurations()
+        self.notify_property_changed("hasType", value)
+        print('\'hasType\' property of CAsset set to \'{}\'').format(value)
 
 
     @property
@@ -20,7 +25,9 @@ class CAsset(object, CBindable):
     @type.setter
     def type(self, value):
         self._type = value
-        self.notify("type", value)
+        self.notify_configurations()
+        self.notify_property_changed("type", value)
+        print('\'type\' property of CAsset set to \'{}\'').format(value)
     
 
     @property
@@ -30,7 +37,9 @@ class CAsset(object, CBindable):
     @hasName.setter
     def hasName(self, value):
         self._hasName = value
-        self.notify("hasName", value)
+        self.notify_configurations()
+        self.notify_property_changed("hasName", value)
+        print('\'hasName\' property of CAsset set to \'{}\'').format(value)
 
 
     @property
@@ -40,7 +49,9 @@ class CAsset(object, CBindable):
     @name.setter 
     def name(self, value):
         self._name = value
-        self.notify("name", value)
+        self.notify_configurations()
+        self.notify_property_changed("name", value)
+        print('\'name\' property of CAsset set to \'{}\'').format(value)
     
 
     @property
@@ -50,7 +61,9 @@ class CAsset(object, CBindable):
     @hasVariant.setter
     def hasVariant(self, value):
         self._hasVariant = value
-        self.notify("hasVariant", value)
+        self.notify_configurations()
+        self.notify_property_changed("hasVariant", value)
+        print('\'hasVariant\' property of CAsset set to \'{}\'').format(value)
     
 
     @property
@@ -60,7 +73,9 @@ class CAsset(object, CBindable):
     @variant.setter
     def variant(self, value):
         self._variant = value
-        self.notify("variant", value)
+        self.notify_configurations()
+        self.notify_property_changed("variant", value)
+        print('\'variant\' property of CAsset set to \'{}\'').format(value)
     
 
     @property
@@ -70,7 +85,9 @@ class CAsset(object, CBindable):
     @hasScene.setter
     def hasScene(self, value):
         self._hasScene = value
-        self.notify("hasScene", value)
+        self.notify_configurations()
+        self.notify_property_changed("hasScene", value)
+        print('\'hasScene\' property of CAsset set to \'{}\'').format(value)
     
 
     @property
@@ -80,7 +97,9 @@ class CAsset(object, CBindable):
     @scene.setter
     def scene(self, value):
         self._scene = value
-        self.notify("scene", value)
+        self.notify_configurations()
+        self.notify_property_changed("scene", value)
+        print('\'scene\' property of CAsset set to \'{}\'').format(value)
 
 
     @property
@@ -90,7 +109,9 @@ class CAsset(object, CBindable):
     @hasShot.setter
     def hasShot(self, value):
         self._hasShot = value
-        self.notify("hasShot", value)
+        self.notify_configurations()
+        self.notify_property_changed("hasShot", value)
+        print('\'hasShot\' property of CAsset set to \'{}\'').format(value)
     
 
     @property
@@ -100,7 +121,9 @@ class CAsset(object, CBindable):
     @shot.setter
     def shot(self, value):
         self._shot = value
-        self.notify("shot", value)
+        self.notify_configurations()
+        self.notify_property_changed("shot", value)
+        print('\'shot\' property of CAsset set to \'{}\'').format(value)
 
 
     @property
@@ -110,7 +133,9 @@ class CAsset(object, CBindable):
     @hasVersion.setter
     def hasVersion(self, value):
         self._hasVersion = value
-        self.notify("hasVersion", value)
+        self.notify_configurations()
+        self.notify_property_changed("hasVersion", value)
+        print('\'hasVersion\' property of CAsset set to \'{}\'').format(value)
 
 
     @property
@@ -120,7 +145,9 @@ class CAsset(object, CBindable):
     @version.setter
     def version(self, value):
         self._version = value
-        self.notify("version", value)
+        self.notify_configurations()
+        self.notify_property_changed("version", value)
+        print('\'version\' property of CAsset set to \'{}\'').format(value)
 
     
     @property
@@ -130,7 +157,9 @@ class CAsset(object, CBindable):
     @save_config.setter
     def save_config(self, value):
         self._save_config = value
-        self.notify("save_config", value)
+        self.notify_configurations()
+        self.notify_property_changed("save_config", value)
+        print('\'save_config\' property of CAsset set to \'{}\'').format(value)
 
 
     @property
@@ -140,7 +169,9 @@ class CAsset(object, CBindable):
     @publish_config.setter
     def publish_config(self, value):
         self._publish_config = value
-        self.notify("publish_config", value)
+        self.notify_configurations()
+        self.notify_property_changed("publish_config", value)
+        print('\'publish_config\' property of CAsset set to \'{}\'').format(value)
 
 
     @property
@@ -150,13 +181,14 @@ class CAsset(object, CBindable):
     @export_config.setter
     def export_config(self, value):
         self._export_config = value
-        self.notify("export_config", value)
+        self.notify_configurations()
+        self.notify_property_changed("export_config", value)
+        print('\'export_config\' property of CAsset set to \'{}\'').format(value)
 
 
     def __init__(self, hasType=False, type="non", hasName=False, name="unamed", hasVariant=False, variant=1, hasScene=False, scene=10, hasShot=False, shot=10, hasVersion=False, version=1, save_config=None, publish_config=None, export_config=None):
-        self._bindings = []
-        self._notified_bindings = []
-        
+        CDataBinding.CBindable.__init__(self)
+
         self._hasType = hasType
         self._type = type
         self._hasName = hasName
@@ -173,56 +205,29 @@ class CAsset(object, CBindable):
         if save_config:
             self._save_config = save_config
         else:
-            self._save_config = SaveConfiguration("save", self)
+            self._save_config = CConfiguration("save", self,\
+                file_name_generator_function=namingConvention.generateFileNameForSavedAsset,\
+                path_generator_function=namingConvention.generatePathForSavedAsset,\
+                )
 
         if publish_config:
             self._publish_config = publish_config
         else:  
-            self._publish_config = PublishConfiguration("publish", self)
+            self._publish_config = CConfiguration("publish", self,\
+                file_name_generator_function=namingConvention.generateFileNameForPublishedAsset,\
+                path_generator_function=namingConvention.generatePathForPublishedAsset,\
+                )
 
         if export_config:
             self._export_config = export_config
         else:
-            self._export_config = ExportConfiguration("export", self)
+            self._export_config = CConfiguration("export", self,\
+                file_name_generator_function=namingConvention.generateFileNameForExportedAsset,\
+                path_generator_function=namingConvention.generatePathForExportedAsset,\
+                )
 
 
-    def bind(self, bindable):
-        if bindable not in self._bindings:
-            self._bindings.append(bindable)
-
-        
-    def unbind(self, bindable):
-        if bindable in self._bindings:
-            self._bindings.remove(bindable)
-
-
-    def notify(self, topic, value):
-        self.notify_save_config(value)
-        self.notify_publish_config(value)
-        self.notify_export_config(value)
-
-        for bindable in self._bindings:
-            if bindable not in self._notified_bindings:
-                bindable.update(topic, value)
-                self._notified_bindings.append(bindable)
-
-        self._notified_bindings = []
-
-
-    def notify_save_config(self, value):
-        self._save_config.update("{}_file_name".format(self.save_config.name), value)
-        self._save_config.update("{}_path".format(self.save_config.name), value)
-
-
-    def notify_publish_config(self, value):
-        self._publish_config.update("{}_file_name".format(self.publish_config.name), value)
-        self._publish_config.update("{}_path".format(self.publish_config.name), value)
-
-
-    def notify_export_config(self, value):
-        self._export_config.update("{}_file_name".format(self.export_config.name), value)
-        self._export_config.update("{}_path".format(self.export_config.name), value)
-
-
-    def update(self, topic, value):
-        NotImplemented
+    def notify_configurations(self):
+        self.save_config.update()
+        self.publish_config.update()
+        self.export_config.update()

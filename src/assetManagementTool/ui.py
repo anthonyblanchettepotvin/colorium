@@ -3,6 +3,7 @@ import colorium.CUI as CUI
 import colorium.assetTypeDefinition as assetTypeDefinition
 import colorium.CSceneNameParser as CSceneNameParser
 import colorium.CCommand as CCommand
+import colorium.CDataBinding as CDataBinding
 
 from colorium.CAsset import CAsset
 
@@ -28,64 +29,60 @@ class AssetManagementToolUI(CUI.CUI):
         type_input = CUI.CComboInput("type", "Asset's type", frm_asset_information,\
             enabled=True,\
             items=assetTypeDefinition.names(),\
-            changed_command=self.controller.set_asset_type,\
             default_value=assetTypeDefinition.getTypeByCode(self.controller.asset.type).name,\
         )
-        self.controller.asset.bind(type_input)
+        CDataBinding.bind(type_input, "enabled", self.controller.asset, "hasType")
+        CDataBinding.bind(type_input, "value", self.controller.asset, "type")
         self.add_control(type_input)
         
         name_input = CUI.CTextInput("name", "Asset's name", frm_asset_information,\
             enabled=True,\
-            changed_command=self.controller.set_asset_name,\
             default_value=self.controller.asset.name,\
         )
-        self.controller.asset.bind(name_input)
+        CDataBinding.bind(name_input, "enabled", self.controller.asset, "hasName")
+        CDataBinding.bind(name_input, "text", self.controller.asset, "name")
         self.add_control(name_input)
         
         variant_input = CUI.CIntInput("variant", "Asset's variant", frm_asset_information,\
             enabled=self.controller.asset.hasVariant,\
+            toggleable=True,\
             min=1,\
             max=99,\
-            changed_command=self.controller.set_asset_variant,\
-            toggle=True,\
-            toggle_command=self.controller.set_asset_hasVariant,\
             default_value=self.controller.asset.variant,\
         )
-        self.controller.asset.bind(variant_input)
+        CDataBinding.bind(variant_input, "enabled", self.controller.asset, "hasVariant")
+        CDataBinding.bind(variant_input, "value", self.controller.asset, "variant")
         self.add_control(variant_input)
         
         scene_input = CUI.CIntInput("scene", "Asset's scene", frm_asset_information,\
             enabled=self.controller.asset.hasScene,\
+            toggleable=True,\
             min=0,\
             max=995,\
-            changed_command=self.controller.set_asset_scene,\
-            toggle=True,\
-            toggle_command=self.controller.set_asset_hasScene,\
             default_value=self.controller.asset.scene,\
         )
-        self.controller.asset.bind(scene_input)
+        CDataBinding.bind(scene_input, "enabled", self.controller.asset, "hasScene")
+        CDataBinding.bind(scene_input, "value", self.controller.asset, "scene")
         self.add_control(scene_input)
         
         shot_input = CUI.CIntInput("shot", "Asset's shot", frm_asset_information,\
             enabled=self.controller.asset.hasShot,\
+            toggleable=True,\
             min=0,\
             max=995,\
-            changed_command=self.controller.set_asset_shot,\
-            toggle=True,\
-            toggle_command=self.controller.set_asset_hasShot,\
             default_value=self.controller.asset.shot,\
         )
-        self.controller.asset.bind(shot_input)
+        CDataBinding.bind(shot_input, "enabled", self.controller.asset, "hasShot")
+        CDataBinding.bind(shot_input, "value", self.controller.asset, "shot")
         self.add_control(shot_input)
         
         version_input = CUI.CIntInput("version", "Asset's version", frm_asset_information,\
             enabled=True,\
             min=1,\
             max=99,\
-            changed_command=self.controller.set_asset_version,\
             default_value=self.controller.asset.version,\
         )
-        self.controller.asset.bind(version_input)
+        CDataBinding.bind(version_input, "value", self.controller.asset, "version")
         self.add_control(version_input)
 
 
@@ -98,8 +95,8 @@ class AssetManagementToolUI(CUI.CUI):
 
         save_input = CUI.CComboInput("save_type", "Save type", frm_save_options,\
             enabled=False,\
+            toggleable=True,\
             items=CCommand.getCommandNamesByAction("save"),\
-            toggle=True,\
             changed_command=self.controller.set_save_config_command,\
         )
         self.add_control(save_input)
@@ -114,8 +111,8 @@ class AssetManagementToolUI(CUI.CUI):
 
         publish_input = CUI.CComboInput("publish_type", "Publish type", frm_publish_options,\
             enabled=False,\
+            toggleable=True,\
             items=CCommand.getCommandNamesByAction("publish"),\
-            toggle=True,\
             changed_command=self.controller.set_publish_config_command,\
         )
         self.add_control(publish_input)
@@ -130,8 +127,8 @@ class AssetManagementToolUI(CUI.CUI):
 
         export_input = CUI.CComboInput("export_type", "Export type", frm_export_options,\
             enabled=False,\
+            toggleable=True,\
             items=CCommand.getCommandNamesByAction("export"),\
-            toggle=True,\
             changed_command=self.controller.set_export_config_command,\
         )
         self.add_control(export_input)
@@ -146,32 +143,29 @@ class AssetManagementToolUI(CUI.CUI):
 
         save_file_name_input = CUI.CTextInput("save_file_name", "Save file name", frm_file_name_preview,\
             enabled=False,\
-            toggle=True,\
-            toggle_command=self.controller.set_save_config_file_name_override,\
+            toggleable=True,\
             default_value=self.controller.asset.save_config.fileName,\
-            changed_command=self.controller.set_save_config_file_name,\
         )
-        self.controller.asset.save_config.bind(save_file_name_input)
+        CDataBinding.bind(save_file_name_input, "enabled", self.controller.asset.save_config, "fileNameOverridden")
+        CDataBinding.bind(save_file_name_input, "text", self.controller.asset.save_config, "fileName")
         self.add_control(save_file_name_input)
 
         publish_file_name_input = CUI.CTextInput("publish_file_name", "Publish file name", frm_file_name_preview,\
             enabled=False,\
-            toggle=True,\
-            toggle_command=self.controller.set_publish_config_file_name_override,\
+            toggleable=True,\
             default_value=self.controller.asset.publish_config.fileName,\
-            changed_command=self.controller.set_publish_config_file_name,\
         )
-        self.controller.asset.publish_config.bind(publish_file_name_input)
+        CDataBinding.bind(publish_file_name_input, "enabled", self.controller.asset.publish_config, "fileNameOverridden")
+        CDataBinding.bind(publish_file_name_input, "text", self.controller.asset.publish_config, "fileName")
         self.add_control(publish_file_name_input)
 
         export_file_name_input = CUI.CTextInput("export_file_name", "Export file name", frm_file_name_preview,\
             enabled=False,\
-            toggle=True,\
-            toggle_command=self.controller.set_export_config_file_name_override,\
+            toggleable=True,\
             default_value=self.controller.asset.export_config.fileName,\
-            changed_command=self.controller.set_export_config_file_name,\
         )
-        self.controller.asset.export_config.bind(export_file_name_input)
+        CDataBinding.bind(export_file_name_input, "enabled", self.controller.asset.export_config, "fileNameOverridden")
+        CDataBinding.bind(export_file_name_input, "text", self.controller.asset.export_config, "fileName")
         self.add_control(export_file_name_input)
     
     
@@ -184,35 +178,32 @@ class AssetManagementToolUI(CUI.CUI):
 
         save_path_input = CUI.CFilePathInput("save_path", "Save path", frm_path_preview,\
             enabled=False,\
-            toggle=True,\
-            toggle_command=self.controller.set_save_config_path_override,\
+            toggleable=True,\
             default_value=self.controller.asset.save_config.path,\
             open_command=self.controller.open_save_path_explorer,\
-            changed_command=self.controller.set_save_config_path,\
         )
-        self.controller.asset.save_config.bind(save_path_input)
+        CDataBinding.bind(save_path_input, "enabled", self.controller.asset.save_config, "pathOverridden")
+        CDataBinding.bind(save_path_input, "text", self.controller.asset.save_config, "path")
         self.add_control(save_path_input)
 
         publish_path_input = CUI.CFilePathInput("publish_path", "Publish path", frm_path_preview,\
             enabled=False,\
-            toggle=True,\
-            toggle_command=self.controller.set_publish_config_path_override,\
+            toggleable=True,\
             default_value=self.controller.asset.publish_config.path,\
             open_command=self.controller.open_publish_path_explorer,\
-            changed_command=self.controller.set_publish_config_path,\
         )
-        self.controller.asset.publish_config.bind(publish_path_input)
+        CDataBinding.bind(publish_path_input, "enabled", self.controller.asset.publish_config, "pathOverridden")
+        CDataBinding.bind(publish_path_input, "text", self.controller.asset.publish_config, "path")
         self.add_control(publish_path_input)
 
         export_path_input = CUI.CFilePathInput("export_path", "Export path", frm_path_preview,\
             enabled=False,\
-            toggle=True,\
-            toggle_command=self.controller.set_export_config_path_override,\
+            toggleable=True,\
             default_value=self.controller.asset.export_config.path,\
             open_command=self.controller.open_export_path_explorer,\
-            changed_command=self.controller.set_export_config_path,\
         )
-        self.controller.asset.export_config.bind(export_path_input)
+        CDataBinding.bind(export_path_input, "enabled", self.controller.asset.export_config, "pathOverridden")
+        CDataBinding.bind(export_path_input, "text", self.controller.asset.export_config, "path")
         self.add_control(export_path_input)
     
     
@@ -283,9 +274,9 @@ class AssetManagementToolController(CUI.CController):
 
 
     def commit(self, value):
-        save_enabled = self.ui.get_control_by_name("save_type").is_toggled()
-        publish_enabled = self.ui.get_control_by_name("publish_type").is_toggled()
-        export_enabled = self.ui.get_control_by_name("export_type").is_toggled()
+        save_enabled = self.ui.get_control_by_name("save_type").enabled
+        publish_enabled = self.ui.get_control_by_name("publish_type").enabled
+        export_enabled = self.ui.get_control_by_name("export_type").enabled
 
         if save_enabled:
             self.asset.save_config.executeCommand()
@@ -295,126 +286,6 @@ class AssetManagementToolController(CUI.CController):
 
         if export_enabled:
             self.asset.export_config.executeCommand()
-
-
-    def set_asset_type(self, value):
-        self.asset.type = assetTypeDefinition.getTypeByName(value).code
-        print self.asset.type
-
-
-    def set_asset_hasType(self, value):
-        self.asset.hasType = value
-        print self.asset.hasType
-
-
-    def set_asset_name(self, value):
-        self.asset.name = value
-        print self.asset.name
-
-
-    def set_asset_hasName(self, value):
-        self.asset.hasName = value
-        print self.asset.hasName
-
-
-    def set_asset_variant(self, value):
-        self.asset.variant = value
-        print self.asset.variant
-
-
-    def set_asset_hasVariant(self, value):
-        self.asset.hasVariant = value
-        print self.asset.hasVariant
-
-
-    def set_asset_scene(self, value):
-        self.asset.scene = value
-        print self.asset.scene
-
-
-    def set_asset_hasScene(self, value):
-        self.asset.hasScene = value
-        print self.asset.hasScene
-
-
-    def set_asset_shot(self, value):
-        self.asset.shot = value
-        print self.asset.shot
-
-
-    def set_asset_hasShot(self, value):
-        self.asset.hasShot = value
-        print self.asset.hasShot
-
-
-    def set_asset_version(self, value):
-        self.asset.version = value
-        print self.asset.version
-
-
-    def set_asset_hasVersion(self, value):
-        self.asset.hasVersion = value
-        print self.asset.hasVersion
-
-
-    def set_save_config_file_name(self, value):
-        self.asset.save_config.fileName = value
-        print self.asset.save_config.fileName
-
-
-    def set_publish_config_file_name(self, value):
-        self.asset.publish_config.fileName = value
-        print self.asset.publish_config.fileName
-
-    
-    def set_export_config_file_name(self, value):
-        self.asset.export_config.fileName = value
-        print self.asset.export_config.fileName
-
-
-    def set_save_config_path(self, value):
-        self.asset.save_config.path = value
-        print self.asset.save_config.path
-
-
-    def set_publish_config_path(self, value):
-        self.asset.publish_config.path = value
-        print self.asset.publish_config.path
-
-    
-    def set_export_config_path(self, value):
-        self.asset.export_config.path = value
-        print self.asset.export_config.path
-
-
-    def set_save_config_file_name_override(self, value):
-        self.asset.save_config.fileNameOverridden = value
-        print self.asset.save_config.fileNameOverridden
-
-    
-    def set_publish_config_file_name_override(self, value):
-        self.asset.publish_config.fileNameOverridden = value
-        print self.asset.publish_config.fileNameOverridden
-
-    
-    def set_export_config_file_name_override(self, value):
-        self.asset.export_config.fileNameOverridden = value
-        print self.asset.export_config.fileNameOverridden
-
-
-    def set_save_config_path_override(self, value):
-        self.asset.save_config.pathOverridden = value
-        print self.asset.save_config.pathOverridden
-
-    
-    def set_publish_config_path_override(self, value):
-        self.asset.publish_config.pathOverridden = value
-        print self.asset.publish_config.pathOverridden
-
-    
-    def set_export_config_path_override(self, value):
-        self.asset.export_config.pathOverridden = value
-        print self.asset.export_config.pathOverridden
 
 
     def set_save_config_command(self, value):
