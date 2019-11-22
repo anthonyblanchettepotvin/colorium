@@ -81,7 +81,7 @@ class CConfiguration(object, CDataBinding.CBindable):
         print('\'command\' property of CConfiguration set to \'{}\'').format(value)
     
 
-    def __init__(self, name, asset_data, file_name_generator_function, path_generator_function):
+    def __init__(self, name, asset_data, file_name_generator_function, path_generator_function, default_command):
         CDataBinding.CBindable.__init__(self)
 
         self.__name = name
@@ -92,7 +92,7 @@ class CConfiguration(object, CDataBinding.CBindable):
         self.__assetData = asset_data
         self.__file_name_generator_function = file_name_generator_function
         self.__path_generator_function = path_generator_function
-        self.__command = None
+        self.__command = default_command
 
         self.update_file_name()
         self.update_path()

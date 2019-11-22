@@ -1,6 +1,5 @@
 
 
-# Module classes
 class AssetTypeDefinition(object):
     @property
     def code(self):
@@ -30,7 +29,6 @@ class AssetTypeDefinition(object):
         self._exportDir = exportDir
 
 
-# Module functionnalities
 SAVE_BASE_PATH = "Y:/project/maya_work/scenes"
 PUBLISH_BASE_PATH = "Y:/project/maya_work/assets"
 EXPORT_PATH = "Y:/project/exports/maya"
@@ -126,6 +124,25 @@ kitType = AssetTypeDefinition(
     exportDir=EXPORT_PATH + "/kits"
 )
 assetTypes.append(kitType)
+
+cameraType = AssetTypeDefinition(
+    code="cam",
+    name="Camera",
+    saveDir=SAVE_BASE_PATH + "/cameras",
+    publishDir=PUBLISH_BASE_PATH + "/cameras",
+    exportDir=EXPORT_PATH + "/cameras"
+)
+assetTypes.append(cameraType)
+
+lightingType = AssetTypeDefinition(
+    code="ltg",
+    name="Lighting",
+    saveDir=SAVE_BASE_PATH + "/lightings",
+    publishDir=PUBLISH_BASE_PATH + "/lightings",
+    exportDir=EXPORT_PATH + "/lightings"
+)
+assetTypes.append(lightingType)
+
 
 def codes():
     codes = []

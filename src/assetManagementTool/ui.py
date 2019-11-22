@@ -98,6 +98,7 @@ class AssetManagementToolUI(CUI.CUI):
             toggleable=True,\
             items=CCommand.getCommandNamesByAction("save"),\
             changed_command=self.controller.set_save_config_command,\
+            default_value=self.controller.asset.save_config.command.name,\
         )
         self.add_control(save_input)
 
@@ -114,6 +115,7 @@ class AssetManagementToolUI(CUI.CUI):
             toggleable=True,\
             items=CCommand.getCommandNamesByAction("publish"),\
             changed_command=self.controller.set_publish_config_command,\
+            default_value=self.controller.asset.publish_config.command.name,\
         )
         self.add_control(publish_input)
 
@@ -130,6 +132,7 @@ class AssetManagementToolUI(CUI.CUI):
             toggleable=True,\
             items=CCommand.getCommandNamesByAction("export"),\
             changed_command=self.controller.set_export_config_command,\
+            default_value=self.controller.asset.export_config.command.name,\
         )
         self.add_control(export_input)
 

@@ -2,6 +2,7 @@ from colorium.CConfiguration import CConfiguration
 
 import assetTypeDefinition
 import colorium.CDataBinding as CDataBinding
+import colorium.CCommand as CCommand
 import namingConvention
 
 
@@ -208,6 +209,7 @@ class CAsset(object, CDataBinding.CBindable):
             self._save_config = CConfiguration("save", self,\
                 file_name_generator_function=namingConvention.generateFileNameForSavedAsset,\
                 path_generator_function=namingConvention.generatePathForSavedAsset,\
+                default_command=CCommand.getCommand('save', 'Maya Ascii'),\
                 )
 
         if publish_config:
@@ -216,6 +218,7 @@ class CAsset(object, CDataBinding.CBindable):
             self._publish_config = CConfiguration("publish", self,\
                 file_name_generator_function=namingConvention.generateFileNameForPublishedAsset,\
                 path_generator_function=namingConvention.generatePathForPublishedAsset,\
+                default_command=CCommand.getCommand('publish', 'Maya Ascii'),\
                 )
 
         if export_config:
@@ -224,6 +227,7 @@ class CAsset(object, CDataBinding.CBindable):
             self._export_config = CConfiguration("export", self,\
                 file_name_generator_function=namingConvention.generateFileNameForExportedAsset,\
                 path_generator_function=namingConvention.generatePathForExportedAsset,\
+                default_command=CCommand.getCommand('export', 'Maya Ascii'),\
                 )
 
 
