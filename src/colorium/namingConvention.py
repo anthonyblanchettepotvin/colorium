@@ -1,6 +1,7 @@
 import re as regex
 import colorium.assetTypeDefinition as assetTypeDefinition
 
+
 class NamingConvention:
     variantPattern = r"(?<=_)\d{2}(?=_)"
     scenePattern = r"(?<=_)\d{3}(?=-)"
@@ -71,6 +72,9 @@ class NamingConvention:
 def generateFileNameForSavedAsset(assetData):
     asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
+    if asset_type_definition == assetTypeDefinition.noneType:
+        asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+
     template = "{type}_{name}_"
     
     if assetData.hasVariant:
@@ -95,6 +99,9 @@ def generateFileNameForSavedAsset(assetData):
 def generateFileNameForPublishedAsset(assetData):
     asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
+    if asset_type_definition == assetTypeDefinition.noneType:
+        asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+
     template = "{type}_{name}_"
     
     if assetData.hasVariant:
@@ -118,6 +125,9 @@ def generateFileNameForPublishedAsset(assetData):
 def generateFileNameForExportedAsset(assetData):
     asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
+    if asset_type_definition == assetTypeDefinition.noneType:
+        asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+
     template = "{type}_{name}_"
     
     if assetData.hasVariant:
@@ -140,6 +150,9 @@ def generateFileNameForExportedAsset(assetData):
 
 def generatePathForSavedAsset(assetData):
     asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
+    if asset_type_definition == assetTypeDefinition.noneType:
+        asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
 
     template = "{saveDir}/"
 
@@ -165,6 +178,9 @@ def generatePathForSavedAsset(assetData):
 def generatePathForPublishedAsset(assetData):
     asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
 
+    if asset_type_definition == assetTypeDefinition.noneType:
+        asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
+
     template = "{publishDir}/"
     
     return template.format(
@@ -178,6 +194,9 @@ def generatePathForPublishedAsset(assetData):
 
 def generatePathForExportedAsset(assetData):
     asset_type_definition = assetTypeDefinition.getTypeByCode(assetData.type)
+
+    if asset_type_definition == assetTypeDefinition.noneType:
+        asset_type_definition = assetTypeDefinition.getTypeByName(assetData.type)
 
     template = "{exportDir}/"
 

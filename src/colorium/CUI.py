@@ -1,46 +1,75 @@
-from abc import ABCMeta, abstractproperty, abstractmethod
+"""Module used to build consistent UI for Colorium's tools using maya.cmds."""
+
 import maya.cmds as cmds
+import colorium.CDataBinding as CDataBinding
+
 
 class CUI(object):
+    """Base class for a Colorium UI."""
+
     @property
     def name(self):
+        """The name of the UI."""
+
         return self._name
 
     @name.setter
     def name(self, value):
         self._name = value
 
+
     @property
     def controller(self):
+        """The controller associated with the UI."""
+
         return self._controller
 
     @controller.setter
     def controller(self, value):
         self._controller = value
 
+
     @property
     def main_window(self):
+        """The name of the UI's main window."""
+
         return self._main_window
 
     @main_window.setter
     def main_window(self, value):
         self._main_window = value
 
+
+    @property
+    def main_frame(self):
+        """The name of the UI's main frame."""
+
+        return self._main_frame
+
+    @main_frame.setter
+    def main_frame(self, value):
+        self._main_frame = value
+
+
     @property
     def main_layout(self):
+        """The name of the UI's main layout."""
+
         return self._main_layout
 
     @main_layout.setter
     def main_layout(self, value):
         self._main_layout = value
 
+
     def __init__(self, name, controller):
         self._controls = []
 
         self._name = name
         self._controller = None
-        self._main_window = ""
-        self._main_layout = ""
+        self._main_window = ''
+        self._main_frame = ''
+        self._main_layout = ''
 
         if not self._controller or self._controller != controller:
             self._controller = controller
@@ -53,7 +82,7 @@ class CUI(object):
         """
         Displays the tool's UI.
         """
-        
+
         self.build_main_window()
         self.build_main_layout()
         self.build_ui()
@@ -63,43 +92,45 @@ class CUI(object):
 
         callback()
 
-        
+
     def build_ui(self):
         """
         Builds the tool's UI.
         """
 
-        NotImplemented
+        pass
 
 
     def add_control(self, control):
+        """Adds a control to the UI's controls."""
+
         if control not in self._controls:
             self._controls.append(control)
 
-    
+
     def remove_control(self, control):
+        """Removes a control from the UI's controls."""
+
         if control in self._controls:
             self._controls.remove(control)
 
 
     def get_control_by_name(self, name):
+        """Returns a control from the UI's controls by it's name."""
+
         for control in self._controls:
-            if control._name == name:
+            if control.name == name:
                 return control
 
 
     def build_main_window(self):
-        """
-        Builds the main window.
-        """
+        """Builds the main window."""
 
         self._main_window = self.build_window("win_main", self._name)
 
 
     def build_window(self, name="untitled", title="untitled"):
-        """
-        Helper function that builds a window using maya.cmds.
-        """
+        """Helper function that builds a window using maya.cmds."""
 
         window_exists = cmds.window(name, q=True, ex=True)
 
@@ -114,142 +145,136 @@ class CUI(object):
 
 
     def build_main_layout(self):
-        """
-        Builds the main layout.
-        """
+        """Builds the main layout."""
 
         self._main_frame = cmds.frameLayout("frm_main", p=self._main_window, lv=False, mh=5, mw=5)
         self._main_layout = cmds.columnLayout("lay_main", p=self._main_frame, adj=True)
 
 
 class CController(object):
+    """Base class for a Colorium UI Controller."""
+
     @property
     def ui(self):
+        """The UI associated with the controller."""
         return self._ui
 
     @ui.setter
     def ui(self, value):
         self._ui = value
 
+
     def __init__(self):
         self._ui = None
 
+
     def display_ui_callback(self):
-        """
-        Called at the end of the method Display of the associated UI instance. Used for post-display operations.
-        """
-        
-        NotImplemented
+        """Called at the end of the method Display of the associated UI instance. Used for post-display operations."""
+
+        pass
 
 
 class CToggleable():
+    """\"Interface\" used to define toggleable controls."""
+
     def toggle(self, value):
-        """
-        Enables/disables the control.
-        """
+        """Method used to enable/disable the control."""
 
-        NotImplemented
-
-    def is_toggled(self):
-        """
-        Returns the toggled value.
-        """
-
-        NotImplemented
-
-
-class CBindable():
-    def bind(self, bindable):
-        """
-        Binds a bindable object to another bindable object.
-        """
-
-        NotImplemented
-
-
-    def unbind(self, bindable):
-        """
-        Unbinds a bindable object from another bindable object.
-        """
-
-        NotImplemented
-
-
-    def update(self, topic, value):
-        """
-        Sends an update to all bindings of the bindable object.
-        """
-
-        NotImplemented
+        pass
 
 
 class CUIElement(object):
+    """Base class for a Colorium UI Element."""
+
+    @property
+    def name(self):
+        """The name of the CUIElement."""
+
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+
+    @property
+    def title(self):
+        """The title of the CUIElement."""
+
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        self._title = value
+
+
+    @property
+    def parent(self):
+        """The name of the CUIElement's parent."""
+
+        return self._parent
+
+    @parent.setter
+    def parent(self, value):
+        self._parent = value
+
+
     def __init__(self, name, title, parent):
         self._name = name
         self._title = title
         self._parent = parent
 
 
-class CCLayout(CUIElement):
-    def __init__(self, name, title, parent, childrens=[]):
-        super(CCLayout, self).__init__(name, title, parent)
+class CLayout(CUIElement):
+    """Base class for a Colorium UI Layout."""
 
-        self._childrens = childrens
+    def __init__(self, name, title, parent, childrens=None):
+        super(CLayout, self).__init__(name, title, parent)
 
-    
+        self._childrens = childrens if childrens else []
+
+
     def add_children(self, children):
+        """Add a given children to the CLayout's childrens."""
+
         if children not in self._childrens:
             self._childrens.append(children)
 
 
     def remove_children(self, children):
+        """Remove a given children from the CLayout's childrens."""
+
         if children in self._childrens:
             self._childrens.remove(children)
 
 
-class CControl(CUIElement, CBindable):
+class CControl(CUIElement, CDataBinding.CBindable):
+    """Base class for a Colorium UI Control."""
+
     def __init__(self, name, title, parent):
         super(CControl, self).__init__(name, title, parent)
-
-        self._bindings = []
+        CDataBinding.CBindable.__init__(self)
 
 
     def build_ui(self):
-        """
-        Builds the control's UI.
-        """
+        """Method used to build the control's UI."""
 
-        NotImplemented
+        pass
 
 
-    def bind(self, bindable):
-        if bindable not in self._bindings:
-            self._bindings.append(bindable)
+class CInlineLayout(CLayout):
+    """Class representing an Inline Layout. It's childrens are placed side by side, aligned on the left or on the right."""
 
-        
-    def unbind(self, bindable):
-        if bindable in self._bindings:
-            self._bindings.remove(bindable)
-
-
-    def notify(self, topic, value):
-        for bindable in self._bindings:
-            bindable.update(topic, value)
-
-    
-    def update(self, topic, value):
-        NotImplemented
-
-
-class CInlineLayout(CCLayout):
-    def __init__(self, name, title, parent, childrens=[], align="left"):
+    def __init__(self, name, title, parent, childrens=None, align="left"):
         super(CInlineLayout, self).__init__(name, title, parent)
 
-        self._childrens = childrens
+        self._childrens = childrens if childrens else []
         self._align = align
 
 
     def build_ui(self):
+        """Method used to build the control's UI."""
+
         align_offset = 0
         align_adjustement_column = len(self._childrens) + 1
         if self._align == "right":
@@ -272,7 +297,7 @@ class CInlineLayout(CCLayout):
 
         if self._childrens:
             for children in self._childrens:
-                children._parent = layout
+                children.parent = layout
                 children.build_ui()
 
         if self._align == "left":
@@ -280,193 +305,331 @@ class CInlineLayout(CCLayout):
 
 
 class CTextInput(CControl, CToggleable):
-    def __init__(self, name, title, parent, enabled=True, changed_command=None, toggle_command=None, toggle=False, default_value=""):
+    """Class that represents a Text Input. Used to write text."""
+
+    @property
+    def text(self):
+        """The text written in the Text Input."""
+
+        return self.__text
+
+    @text.setter
+    def text(self, value):
+        self.__text = value
+
+        cmds.textField("txt_{}".format(self._name), e=True, tx=value)
+
+        self.notify_property_changed("text", value)
+        print('\'text\' property of CTextInput set to \'{}\'').format(value)
+
+
+    @property
+    def enabled(self):
+        """The state of the Text Input."""
+
+        return self.__enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self.__enabled = value
+
+        cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
+        cmds.control("txt_{}".format(self._name), e=True, en=value)
+
+        self.notify_property_changed("enabled", value)
+        print('\'enabled\' property of CTextInput set to \'{}\'').format(value)
+
+
+    def __init__(self, name, title, parent, enabled=True, changed_command=None, toggle_command=None, toggleable=False, default_value=""):
         super(CTextInput, self).__init__(name, title, parent)
 
-        self._enabled = enabled
-        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
-        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
-        self._toggle = toggle
-        self._default_value = default_value
+        self.__text = default_value
+        self.__enabled = enabled
+        self.__toggleable = toggleable
+        self.__changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self.__toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
 
 
     def build_ui(self):
+        """Method used to build the control's UI."""
+
         layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
-        
-        if self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self._enabled, cc=lambda value: self.toggle(value))
+
+        if self.__toggleable:
+            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self.__enabled, cc=self.toggle)
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
-        cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, cc=lambda value: self._changed_command(value))
+        cmds.textField("txt_{}".format(self._name), p=layout, tx=self.__text, en=self.__enabled, cc=self.text_changed)
+
+
+    def text_changed(self, value):
+        """Method called when the Text Input's text changed."""
+
+        self.__changed_command(value)
+
+        self.text = value
 
 
     def toggle(self, value):
-        if self._toggle_command:
-            self._toggle_command(value)
-        
+        """Method called when the Text Input's state changed."""
+
+        self.__toggle_command(value)
+
+        self.enabled = value
+
         cmds.control("txt_{}".format(self._name), e=True, en=value)
-
-    
-    def is_toggled(self):
-        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
-
-        return value
-
-
-    def update(self, topic, value):
-        if topic == self._name:
-            cmds.textField("txt_{}".format(self._name), e=True, tx=value)
-        elif topic == "has{}".format(self._name.title()) and self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
-            cmds.control("txt_{}".format(self._name), e=True, en=value)
 
 
 class CIntInput(CControl, CToggleable):
-    def __init__(self, name, title, parent, enabled=True, min=1, max=10, changed_command=None, toggle_command=None, toggle=False, default_value=1):
+    """Class that represents a Int Input. Used to write numbers."""
+
+    @property
+    def value(self):
+        """The number written in the Int Input."""
+
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        self.__value = value
+
+        cmds.intSliderGrp("int_{}".format(self._name), e=True, v=value)
+
+        self.notify_property_changed("value", value)
+        print('\'value\' property of CIntInput set to \'{}\'').format(value)
+
+
+    @property
+    def enabled(self):
+        """The state of the Int Input."""
+
+        return self.__enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self.__enabled = value
+
+        cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
+        cmds.control("int_{}".format(self._name), e=True, en=value)
+
+        self.notify_property_changed("enabled", value)
+        print('\'enabled\' property of CIntInput set to \'{}\'').format(value)
+
+
+    def __init__(self, name, title, parent, enabled=True, min_value=1, max_value=10, changed_command=None, toggle_command=None, toggleable=False, default_value=1):
         super(CIntInput, self).__init__(name, title, parent)
 
-        self._enabled = enabled
-        self._min = min
-        self._max = max
-        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
-        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
-        self._toggle = toggle
-        self._default_value = default_value
+        self.__value = default_value
+        self.__enabled = enabled
+        self.__toggleable = toggleable
+        self.__min = min_value
+        self.__max = max_value
+        self.__changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self.__toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
 
 
     def build_ui(self):
+        """Method used to build the control's UI."""
+
         layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
-        
-        if self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self._enabled, cc=lambda value: self.toggle(value))
+
+        if self.__toggleable:
+            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self.__enabled, cc=self.toggle)
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
-        cmds.intSliderGrp("int_{}".format(self._name), p=layout, v=self._default_value, f=True, min=self._min, max=self._max, en=self._enabled, cc=lambda value: self._changed_command(value))
+        cmds.intSliderGrp("int_{}".format(self._name), p=layout, v=self.__value, f=True, min=self.__min, max=self.__max, en=self.__enabled, cc=self.value_changed)
+
+
+    def value_changed(self, value):
+        """Method called when the Int Input's value changed."""
+
+        self.__changed_command(value)
+
+        self.value = value
 
 
     def toggle(self, value):
-        if self._toggle_command:
-            self._toggle_command(value)
+        """Method called when the Int Input's state changed."""
+
+        self.__toggle_command(value)
+
+        self.enabled = value
 
         cmds.control("int_{}".format(self._name), e=True, en=value)
 
 
-    def is_toggled(self):
-        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
-
-        return value
-
-
-    def update(self, topic, value):
-        if topic == self._name:
-            cmds.intSliderGrp("int_{}".format(self._name), e=True, v=value)
-        elif topic == "has{}".format(self._name.title()) and self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
-            cmds.control("int_{}".format(self._name), e=True, en=value)
-
-
 class CComboInput(CControl, CToggleable):
-    def __init__(self, name, title, parent, enabled=True, items=[], changed_command=None, toggle_command=None, toggle=False, default_value=""):
+    """Class that represents a Combo Input. Used to choose a value from a list of values."""
+
+    @property
+    def value(self):
+        """The chosen value of the Combo Input."""
+
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        self.__value = value
+
+        cmds.optionMenu("cmb_{}".format(self._name), e=True, v=value)
+
+        self.notify_property_changed("value", value)
+        print('\'value\' property of CComboInput set to \'{}\'').format(value)
+
+
+    @property
+    def enabled(self):
+        """The state of the Combo Input."""
+
+        return self.__enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self.__enabled = value
+
+        cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
+        cmds.control("cmb_{}".format(self._name), e=True, en=value)
+
+        self.notify_property_changed("enabled", value)
+        print('\'enabled\' property of CComboInput set to \'{}\'').format(value)
+
+
+    def __init__(self, name, title, parent, enabled=True, items=None, changed_command=None, toggle_command=None, toggleable=False, default_value=""):
         super(CComboInput, self).__init__(name, title, parent)
 
-        self._enabled = enabled
-        self._items = items
-        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
-        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
-        self._toggle = toggle
-        self._default_value = default_value
+        self.__value = default_value
+        self.__enabled = enabled
+        self.__toggleable = toggleable
+        self.__items = items if items else []
+        self.__changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self.__toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
 
 
     def build_ui(self):
+        """Method used to build the control's UI."""
+
         layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
-        
-        if self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self._enabled, cc=lambda value: self.toggle(value))
+
+        if self.__toggleable:
+            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self.__enabled, cc=self.toggle)
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
-        cmds.optionMenu("cmb_{}".format(self._name), p=layout, en=self._enabled, cc=lambda value: self._changed_command(value))
+        cmds.optionMenu("cmb_{}".format(self._name), p=layout, en=self.__enabled, cc=self.value_changed)
 
-        for item in self._items:
+        for item in self.__items:
             cmds.menuItem("itm_{}_{}".format(self._name, item), l=item)
 
-        if self._default_value in self._items:
-            cmds.optionMenu("cmb_{}".format(self._name), e=True, v=self._default_value)
+        if self.__value in self.__items:
+            cmds.optionMenu("cmb_{}".format(self._name), e=True, v=self.__value)
+
+
+    def value_changed(self, value):
+        """Method called when the Combo Input's value changed."""
+
+        self.__changed_command(value)
+
+        self.value = value
 
 
     def toggle(self, value):
-        if self._toggle_command:
-            self._toggle_command(value)
-        
+        """Method called when the Combo Input's state changed."""
+
+        self.__toggle_command(value)
+
+        self.enabled = value
+
         cmds.control("cmb_{}".format(self._name), e=True, en=value)
-
-    
-    def is_toggled(self):
-        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
-
-        return value
-
-
-    def update(self, topic, value):
-        if topic == self._name:
-            cmds.optionMenu("cmb_{}".format(self._name), e=True, v=value)
-        elif topic == "has{}".format(self._name.title()) and self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
-            cmds.control("cmb_{}".format(self._name), e=True, en=value)
 
 
 class CFilePathInput(CControl, CToggleable):
-    def __init__(self, name, title, parent, enabled=True, changed_command=None, open_command=None, toggle_command=None, toggle=False, default_value=""):
+    """Class that represents a File Path Input. Used to write a file path and open it in the explorer."""
+
+    @property
+    def text(self):
+        """The file path written in the File Path Input."""
+
+        return self.__text
+
+    @text.setter
+    def text(self, value):
+        self.__text = value
+
+        cmds.textField("txt_{}".format(self._name), e=True, tx=value)
+
+        self.notify_property_changed("text", value)
+        print('\'text\' property of CFilePathInput set to \'{}\'').format(value)
+
+
+    @property
+    def enabled(self):
+        """The state of the File Path Input."""
+
+        return self.__enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self.__enabled = value
+
+        cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
+        cmds.control("txt_{}".format(self._name), e=True, en=value)
+
+        self.notify_property_changed("enabled", value)
+        print('\'enabled\' property of CFilePathInput set to \'{}\'').format(value)
+
+
+    def __init__(self, name, title, parent, enabled=True, changed_command=None, open_command=None, toggle_command=None, toggleable=False, default_value=""):
         super(CFilePathInput, self).__init__(name, title, parent)
 
-        self._enabled = enabled
-        self._changed_command = changed_command if changed_command else lambda value: NotImplemented
-        self._open_command = open_command if open_command else lambda value: NotImplemented
-        self._toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
-        self._toggle = toggle
-        self._default_value = default_value
+        self.__text = default_value
+        self.__enabled = enabled
+        self.__toggleable = toggleable
+        self.__changed_command = changed_command if changed_command else lambda value: NotImplemented
+        self.__open_command = open_command if open_command else lambda value: NotImplemented
+        self.__toggle_command = toggle_command if toggle_command else lambda value: NotImplemented
 
 
     def build_ui(self):
+        """Method used to build the control's UI."""
+
         layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=4, cat=[(2, "right", 5), (4, "left", 5)], cw=[(1, 25), (2, 100), (4, 100)], adj=3)
-        
-        if self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self._enabled, cc=lambda value: self.toggle(value))
+
+        if self.__toggleable:
+            cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self.__enabled, cc=self.toggle)
         else:
             cmds.separator("sep_{}".format(self._name), vis=False)
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
-        cmds.textField("txt_{}".format(self._name), p=layout, tx=self._default_value, en=self._enabled, tcc=lambda value: self._changed_command(value))
-        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60, c=self._open_command)
+        cmds.textField("txt_{}".format(self._name), p=layout, tx=self.__text, en=self.__enabled, tcc=self.text_changed)
+        cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60, c=self.__open_command)
+
+
+    def text_changed(self, value):
+        """Method called when the File Path Input's value changed."""
+
+        self.__changed_command(value)
+
+        self.text = value
 
 
     def toggle(self, value):
-        if self._toggle_command:
-            self._toggle_command(value)
-        
+        """Method called when the File Path Input's state changed."""
+
+        self.__toggle_command(value)
+
+        self.enabled = value
+
         cmds.control("txt_{}".format(self._name), e=True, en=value)
 
 
-    def is_toggled(self):
-        value = cmds.checkBox("chk_{}".format(self._name), q=True, v=True)
-
-        return value
-
-
-    def update(self, topic, value):
-        if topic == self._name:
-            cmds.textField("txt_{}".format(self._name), e=True, tx=value)
-        elif topic == "has{}".format(self._name.title()) and self._toggle:
-            cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
-            cmds.control("txt_{}".format(self._name), e=True, en=value)
-
-
 class CButtonControl(CControl):
+    """Class that represents a Button Control. Used to execute a command."""
+
     def __init__(self, name, title, parent, command=None):
         super(CButtonControl, self).__init__(name, title, parent)
 
@@ -474,8 +637,6 @@ class CButtonControl(CControl):
 
 
     def build_ui(self):
+        """Method used to build the control's UI."""
+
         cmds.button("btn_{}".format(self._name), l=self._title, p=self._parent, w=60, c=self._command)
-
-
-    def update(self, topic, value):
-        pass
