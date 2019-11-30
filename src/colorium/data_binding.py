@@ -38,27 +38,27 @@ class CBinding():
     def __eq__(self, other):
         if self.__obj is other.obj and self.__obj_prop == other.obj_prop and self.__prop == other.prop:
             return True
-        else:
-            return False
+
+        return False
 
 
     def __ne__(self, other):
         if self.__eq__(other):
             return False
-        else:
-            return True
+
+        return True
 
 
     def update_prop(self, value):
         obj_type = type(self.__obj)
 
         if self.__obj_prop not in obj_type.__dict__:
-            print('{!r} is not an attribute of class {}'.format(self.__obj_prop, obj_type.__name__))
+            print '{!r} is not an attribute of class {}'.format(self.__obj_prop, obj_type.__name__)
         else:
             prop = obj_type.__dict__[self.__obj_prop]
 
             if not isinstance(prop, property):
-                print('{!r} is not a property of class {}'.format(self.__obj_prop, obj_type.__name__))
+                print '{!r} is not a property of class {}'.format(self.__obj_prop, obj_type.__name__)
 
             self.__obj.notified = True
 
@@ -68,9 +68,14 @@ class CBinding():
 
 
 class CBindable():
+    """\"Interface\" used to define a bindable object. A bindable object's properties can be bound to another bindable object's properties.
+    The notify_property_changed function can be used in the setter fucntion of a bindable object's property to notify any bindable object's property
+    bound to the notifier."""
 
     @property
     def notified(self):
+        """Indicates if the object is being notify."""
+
         return self.__notified
 
     @notified.setter
@@ -83,28 +88,34 @@ class CBindable():
         self.__notified = False
 
 
-    def add_binding(self, bind):
+    def add_binding(self, new_binding):
+        """Add a binding the object's binding list."""
+
         if not self.__bindings:
-            self.__bindings.append(bind)
+            self.__bindings.append(new_binding)
         else:
             found = False
 
             for binding in self.__bindings:
-                if binding == bind:
+                if binding == new_binding:
                     found = True
 
-            if not found:     
-                self.__bindings.append(bind)
+            if not found:
+                self.__bindings.append(new_binding)
 
 
-    def remove_binding(self, bind):
+    def remove_binding(self, old_binding):
+        """Add a binding the object's binding list."""
+
         if self.__bindings:
             for binding in self.__bindings:
-                if binding == bind:
+                if binding == old_binding:
                     self.__bindings.remove(binding)
-    
+
 
     def notify_property_changed(self, prop, value):
+        """Notifies the bindings in the object's binding list that match the specified property and sends them the new value."""
+
         if not self.__notified:
             for binding in self.__bindings:
                 if binding.prop == prop:
@@ -112,6 +123,8 @@ class CBindable():
 
 
 def bind(obj_a, obj_a_property, obj_b, obj_b_property, two_way=True):
+    """Bind a object's property to another object's property."""
+
     if is_valid_property(obj_a, obj_a_property) and is_valid_property(obj_b, obj_b_property):
         binding_a = CBinding(obj_a, obj_a_property, obj_b_property)
 
@@ -124,6 +137,8 @@ def bind(obj_a, obj_a_property, obj_b, obj_b_property, two_way=True):
 
 
 def unbind(obj_a, obj_a_property, obj_b, obj_b_property, two_way=True):
+    """Unbind a object's property from another object's property."""
+
     if is_valid_property(obj_a, obj_a_property) and is_valid_property(obj_b, obj_b_property):
         binding_a = CBinding(obj_a, obj_a_property, obj_b_property)
 
@@ -136,17 +151,19 @@ def unbind(obj_a, obj_a_property, obj_b, obj_b_property, two_way=True):
 
 
 def is_valid_property(obj, prop):
+    """Checks if a property on a object is valid/exists."""
+
     obj_type = type(obj)
 
     if prop not in obj_type.__dict__:
-            print('{!r} is not an attribute of class {}'.format(prop, obj_type.__name__))
+        print '{!r} is not an attribute of class {}'.format(prop, obj_type.__name__)
 
-            return False
+        return False
     else:
         prop = obj_type.__dict__[prop]
 
         if not isinstance(prop, property):
-            print('{!r} is not a property of class {}'.format(prop, obj_type.__name__))
+            print '{!r} is not a property of class {}'.format(prop, obj_type.__name__)
 
             return False
 

@@ -19,6 +19,6 @@
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.linting.pylintArgs": [
-        "--disable=assignment-from-no-return, wrong-import-position, wrong-import-order, line-too-long, unused-argument, no-init, old-style-class, too-many-arguments",
+        "--disable=assignment-from-no-return, wrong-import-position, wrong-import-order, line-too-long, unused-argument, no-init, old-style-class, too-many-arguments, super-init-not-called",
     ]
 }

@@ -1,7 +1,7 @@
 """Module used to build consistent UI for Colorium's tools using maya.cmds."""
 
 import maya.cmds as cmds
-import colorium.CDataBinding as CDataBinding
+import colorium.data_binding as data_binding
 
 
 class CUI(object):
@@ -248,12 +248,12 @@ class CLayout(CUIElement):
             self._childrens.remove(children)
 
 
-class CControl(CUIElement, CDataBinding.CBindable):
+class CControl(CUIElement, data_binding.CBindable):
     """Base class for a Colorium UI Control."""
 
     def __init__(self, name, title, parent):
         super(CControl, self).__init__(name, title, parent)
-        CDataBinding.CBindable.__init__(self)
+        data_binding.CBindable.__init__(self)
 
 
     def build_ui(self):

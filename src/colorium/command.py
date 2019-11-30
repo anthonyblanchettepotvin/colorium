@@ -1,25 +1,40 @@
+"""Module containing all the commands used in Colorium's tools."""
+
 from abc import ABCMeta, abstractmethod, abstractproperty
 import os
 import maya.cmds as cmds
 
 
 class CCommand:
+    """Abstract class for a command."""
+
     __metaclass__ = ABCMeta
+
 
     @abstractproperty
     def name(self):
+        """The name of the command."""
+
         pass
+
 
     @abstractproperty
     def action(self):
+        """The type of action the command does."""
+
         pass
+
 
     @abstractmethod
     def execute(self, config):
+        """The execution of the command."""
+
         pass
-    
+
 
 class CConcreteCommand(CCommand):
+    """Concrete implementation of the CCommand class."""
+
     @property
     def name(self):
         return self._name
@@ -40,6 +55,8 @@ class CConcreteCommand(CCommand):
 
     @property
     def function(self):
+        """The function that contains the executing code."""
+
         return self._function
 
     @function.setter
@@ -52,12 +69,14 @@ class CConcreteCommand(CCommand):
         self._name = name
         self._function = function
 
-    
+
     def execute(self, config):
         self._function(config)
 
 
-def __openExplorer(config):
+def __open_explorer(config):
+    """Open the configuration path in the Explorer."""
+
     if not os.path.exists(config.path):
         cmds.confirmDialog(
             title="Cannot open in Explorer",
@@ -67,13 +86,15 @@ def __openExplorer(config):
         )
 
         return
-        
+
     path = os.path.realpath(config.path)
 
     os.startfile(path)
 
 
-def __openScene(config):
+def __open_scene(config):
+    """Open the Maya scene based on the configuration."""
+
     if not os.path.exists(config.path + config.fileName + ".ma"):
         cmds.confirmDialog(
             title="Cannot open asset",
@@ -83,7 +104,7 @@ def __openScene(config):
         )
 
         return
-    
+
     current_scene_name = cmds.file(q=True, sn=True)
     if current_scene_name:
         cmds.file(s=True)
@@ -92,7 +113,9 @@ def __openScene(config):
     cmds.file(config.path + config.fileName + ".ma", f=True, o=True, iv=True)
 
 
-def __createBlankMayaAscii(config):
+def __create_blank_maya_ascii(config):
+    """Create a blank Maya Ascii scene based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
     else:
@@ -104,7 +127,7 @@ def __createBlankMayaAscii(config):
         )
 
         return
-    
+
     current_scene_name = cmds.file(q=True, sn=True)
     if current_scene_name:
         cmds.file(s=True)
@@ -114,7 +137,9 @@ def __createBlankMayaAscii(config):
     cmds.file(s=True, typ="mayaAscii")
 
 
-def __saveMayaAscii(config):
+def __save_maya_ascii(config):
+    """Save the scene in Maya Ascii based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
@@ -122,7 +147,9 @@ def __saveMayaAscii(config):
     cmds.file(s=True, typ="mayaAscii")
 
 
-def __saveMayaBinary(config):
+def __save_maya_binary(config):
+    """Save the scene in Maya Binary based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
@@ -130,12 +157,14 @@ def __saveMayaBinary(config):
     cmds.file(s=True, typ="mayaBinary")
 
 
-def __publishMayaAscii(config):
+def __publish_maya_ascii(config):
+    """Publish the asset in Maya Ascii based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
     selection = cmds.ls(sl=True)
-    if len(selection) == 0:
+    if not selection:
         cmds.confirmDialog(
             title="Cannot publish asset",
             message="The asset cannot be published. Please, select the objects you want to publish.",
@@ -148,12 +177,14 @@ def __publishMayaAscii(config):
     cmds.file(config.path + config.fileName, es=True, typ="mayaAscii")
 
 
-def __publishMayaBinary(config):
+def __publish_maya_binary(config):
+    """Publish the asset in Maya Binary based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
     selection = cmds.ls(sl=True)
-    if len(selection) == 0:
+    if not selection:
         cmds.confirmDialog(
             title="Cannot publish asset",
             message="The asset cannot be published. Please, select the objects you want to publish.",
@@ -166,7 +197,9 @@ def __publishMayaBinary(config):
     cmds.file(config.path + config.fileName, es=True, typ="mayaBinary")
 
 
-def __publishGeometryCache(config):
+def __publish_maya_geometry_cache(config):
+    """Publish the asset in Maya Geometry Cache based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
@@ -181,19 +214,21 @@ def __publishGeometryCache(config):
         )
 
         return
-                
+
     start_frame = cmds.playbackOptions(q=True, ast=True)
     end_frame = cmds.playbackOptions(q=True, aet=True)
-    
+
     cmds.cacheFile(f=config.fileName, dir=config.path, pts=selected_shapes, st=start_frame, et=end_frame, r=True, ws=True, fm="OneFile", sch=True)
 
 
-def __exportMayaAscii(config):
+def __export_maya_ascii(config):
+    """Export the asset in Maya Ascii based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
     selection = cmds.ls(sl=True)
-    if len(selection) == 0:
+    if not selection:
         cmds.confirmDialog(
             title="Cannot export asset",
             message="The asset cannot be exported. Please, select the objects you want to export.",
@@ -206,12 +241,14 @@ def __exportMayaAscii(config):
     cmds.file(config.path + config.fileName, es=True, typ="mayaAscii")
 
 
-def __exportMayaBinary(config):
+def __export_maya_binary(config):
+    """Export the asset in Maya Binary based on the configuration."""
+
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
     selection = cmds.ls(sl=True)
-    if len(selection) == 0:
+    if not selection:
         cmds.confirmDialog(
             title="Cannot export asset",
             message="The asset cannot be exported. Please, select the objects you want to export.",
@@ -224,65 +261,79 @@ def __exportMayaBinary(config):
     cmds.file(config.path + config.fileName, es=True, typ="mayaBinary")
 
 
-def __exportAlembic(config):
-    NotImplemented
+def __export_alembic(config):
+    """Export the asset in Alembic based on the configuration."""
+
+    pass
 
 
-def __exportFBX(config):
-    NotImplemented
+def __export_fbx(config):
+    """Export the asset in FBX based on the configuration."""
+
+    pass
 
 
-def __exportOBJ(config):
-    NotImplemented
+def __export_obj(config):
+    """Export the asset in OBJ based on the configuration."""
+
+    pass
 
 
-commands = []
-commands.append(CConcreteCommand("open", "Explorer", __openExplorer))
-commands.append(CConcreteCommand("open", "Scene", __openScene))
-commands.append(CConcreteCommand("create", "Blank Maya Ascii", __createBlankMayaAscii))
-commands.append(CConcreteCommand("save", "Maya Ascii", __saveMayaAscii))
-commands.append(CConcreteCommand("save", "Maya Binary", __saveMayaBinary))
-commands.append(CConcreteCommand("publish", "Maya Ascii", __publishMayaAscii))
-commands.append(CConcreteCommand("publish", "Maya Binary", __publishMayaBinary))
-commands.append(CConcreteCommand("publish", "Geometry Cache", __publishGeometryCache))
-commands.append(CConcreteCommand("export", "Maya Ascii", __exportMayaAscii))
-commands.append(CConcreteCommand("export", "Maya Binary", __exportMayaBinary))
-commands.append(CConcreteCommand("export", "FBX", __exportFBX))
-commands.append(CConcreteCommand("export", "OBJ", __exportOBJ))
-commands.append(CConcreteCommand("export", "Alembic", __exportAlembic))
+COMMANDS = []
+COMMANDS.append(CConcreteCommand("open", "Explorer", __open_explorer))
+COMMANDS.append(CConcreteCommand("open", "Scene", __open_scene))
+COMMANDS.append(CConcreteCommand("create", "Blank Maya Ascii", __create_blank_maya_ascii))
+COMMANDS.append(CConcreteCommand("save", "Maya Ascii", __save_maya_ascii))
+COMMANDS.append(CConcreteCommand("save", "Maya Binary", __save_maya_binary))
+COMMANDS.append(CConcreteCommand("publish", "Maya Ascii", __publish_maya_ascii))
+COMMANDS.append(CConcreteCommand("publish", "Maya Binary", __publish_maya_binary))
+COMMANDS.append(CConcreteCommand("publish", "Geometry Cache", __publish_maya_geometry_cache))
+COMMANDS.append(CConcreteCommand("export", "Maya Ascii", __export_maya_ascii))
+COMMANDS.append(CConcreteCommand("export", "Maya Binary", __export_maya_binary))
+COMMANDS.append(CConcreteCommand("export", "FBX", __export_fbx))
+COMMANDS.append(CConcreteCommand("export", "OBJ", __export_obj))
+COMMANDS.append(CConcreteCommand("export", "Alembic", __export_alembic))
 
 
-def getCommandsByAction(action):
+def get_commands_by_action(action):
+    """Get commands by action."""
+
     commands_to_return = []
 
-    for command in commands:
+    for command in COMMANDS:
         if command.action == action:
             commands_to_return.append(command)
 
     return commands_to_return
 
 
-def getCommandsByName(name):
+def get_commands_by_name(name):
+    """Get commands by name."""
+
     commands_to_return = []
 
-    for command in commands:
+    for command in COMMANDS:
         if command.name == name:
             commands_to_return.append(name)
 
     return commands_to_return
 
 
-def getCommandNamesByAction(action):
+def get_command_names_by_action(action):
+    """Get command names by action."""
+
     command_names_to_return = []
 
-    for command in commands:
+    for command in COMMANDS:
         if command.action == action:
             command_names_to_return.append(command.name)
 
     return command_names_to_return
 
 
-def getCommand(action, name):
-    for command in commands:
+def get_command(action, name):
+    """Get the command by action and name."""
+
+    for command in COMMANDS:
         if command.action == action and command.name == name:
             return command

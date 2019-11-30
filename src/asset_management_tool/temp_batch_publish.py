@@ -12,19 +12,20 @@ imports.dropCachedImports(
 )
 
 import maya.cmds as cmds
-import colorium.CCommand as CCommand
-import colorium.CSceneNameParser as CSceneNameParser
+import colorium.command as command
+import colorium.scene_name_parser as scene_name_parser
 
 
 def batch_publish_maya_ascii():
     """Publish all selected objects using Maya Ascii publish command."""
+
     selection = cmds.ls(sl=True)
 
     for element in selection:
-        asset = CSceneNameParser.parseStringToAssetData(element)
+        asset = scene_name_parser.parse_string_to_asset(element)
 
         cmds.select(cl=True)
         cmds.select(element, add=True)
 
-        asset.publish_config.command = CCommand.getCommand('publish', 'Maya Ascii')
+        asset.publish_config.command = command.get_command('publish', 'Maya Ascii')
         asset.publish_config.executeCommand()
