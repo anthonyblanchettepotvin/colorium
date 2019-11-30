@@ -5,7 +5,7 @@ import colorium.ui as ui
 import colorium.asset_type_definition as asset_type_definition
 import colorium.scene_name_parser as scene_name_parser
 import colorium.command as command
-import colorium.CDataBinding as CDataBinding
+import colorium.data_binding as data_binding
 
 
 class AssetManagementToolUI(ui.CUI):
@@ -31,16 +31,16 @@ class AssetManagementToolUI(ui.CUI):
             items=asset_type_definition.names(),\
             default_value=asset_type_definition.get_type_by_code(self.controller.asset.type).name,\
         )
-        CDataBinding.bind(type_input, "enabled", self.controller.asset, "has_type")
-        CDataBinding.bind(type_input, "value", self.controller.asset, "type")
+        data_binding.bind(type_input, "enabled", self.controller.asset, "has_type")
+        data_binding.bind(type_input, "value", self.controller.asset, "type")
         self.add_control(type_input)
 
         name_input = ui.CTextInput("name", "Asset's name", frm_asset_information,\
             enabled=True,\
             default_value=self.controller.asset.name,\
         )
-        CDataBinding.bind(name_input, "enabled", self.controller.asset, "has_name")
-        CDataBinding.bind(name_input, "text", self.controller.asset, "name")
+        data_binding.bind(name_input, "enabled", self.controller.asset, "has_name")
+        data_binding.bind(name_input, "text", self.controller.asset, "name")
         self.add_control(name_input)
 
         variant_input = ui.CIntInput("variant", "Asset's variant", frm_asset_information,\
@@ -50,8 +50,8 @@ class AssetManagementToolUI(ui.CUI):
             max_value=99,\
             default_value=self.controller.asset.variant,\
         )
-        CDataBinding.bind(variant_input, "enabled", self.controller.asset, "has_variant")
-        CDataBinding.bind(variant_input, "value", self.controller.asset, "variant")
+        data_binding.bind(variant_input, "enabled", self.controller.asset, "has_variant")
+        data_binding.bind(variant_input, "value", self.controller.asset, "variant")
         self.add_control(variant_input)
 
         scene_input = ui.CIntInput("scene", "Asset's scene", frm_asset_information,\
@@ -61,8 +61,8 @@ class AssetManagementToolUI(ui.CUI):
             max_value=995,\
             default_value=self.controller.asset.scene,\
         )
-        CDataBinding.bind(scene_input, "enabled", self.controller.asset, "has_scene")
-        CDataBinding.bind(scene_input, "value", self.controller.asset, "scene")
+        data_binding.bind(scene_input, "enabled", self.controller.asset, "has_scene")
+        data_binding.bind(scene_input, "value", self.controller.asset, "scene")
         self.add_control(scene_input)
 
         shot_input = ui.CIntInput("shot", "Asset's shot", frm_asset_information,\
@@ -72,8 +72,8 @@ class AssetManagementToolUI(ui.CUI):
             max_value=995,\
             default_value=self.controller.asset.shot,\
         )
-        CDataBinding.bind(shot_input, "enabled", self.controller.asset, "has_shot")
-        CDataBinding.bind(shot_input, "value", self.controller.asset, "shot")
+        data_binding.bind(shot_input, "enabled", self.controller.asset, "has_shot")
+        data_binding.bind(shot_input, "value", self.controller.asset, "shot")
         self.add_control(shot_input)
 
         version_input = ui.CIntInput("version", "Asset's version", frm_asset_information,\
@@ -82,7 +82,7 @@ class AssetManagementToolUI(ui.CUI):
             max_value=99,\
             default_value=self.controller.asset.version,\
         )
-        CDataBinding.bind(version_input, "value", self.controller.asset, "version")
+        data_binding.bind(version_input, "value", self.controller.asset, "version")
         self.add_control(version_input)
 
 
@@ -141,8 +141,8 @@ class AssetManagementToolUI(ui.CUI):
             toggleable=True,\
             default_value=self.controller.asset.save_config.file_name,\
         )
-        CDataBinding.bind(save_file_name_input, "enabled", self.controller.asset.save_config, "file_name_overridden")
-        CDataBinding.bind(save_file_name_input, "text", self.controller.asset.save_config, "file_name")
+        data_binding.bind(save_file_name_input, "enabled", self.controller.asset.save_config, "file_name_overridden")
+        data_binding.bind(save_file_name_input, "text", self.controller.asset.save_config, "file_name")
         self.add_control(save_file_name_input)
 
         publish_file_name_input = ui.CTextInput("publish_file_name", "Publish file name", frm_file_name_preview,\
@@ -150,8 +150,8 @@ class AssetManagementToolUI(ui.CUI):
             toggleable=True,\
             default_value=self.controller.asset.publish_config.file_name,\
         )
-        CDataBinding.bind(publish_file_name_input, "enabled", self.controller.asset.publish_config, "file_name_overridden")
-        CDataBinding.bind(publish_file_name_input, "text", self.controller.asset.publish_config, "file_name")
+        data_binding.bind(publish_file_name_input, "enabled", self.controller.asset.publish_config, "file_name_overridden")
+        data_binding.bind(publish_file_name_input, "text", self.controller.asset.publish_config, "file_name")
         self.add_control(publish_file_name_input)
 
         export_file_name_input = ui.CTextInput("export_file_name", "Export file name", frm_file_name_preview,\
@@ -159,8 +159,8 @@ class AssetManagementToolUI(ui.CUI):
             toggleable=True,\
             default_value=self.controller.asset.export_config.file_name,\
         )
-        CDataBinding.bind(export_file_name_input, "enabled", self.controller.asset.export_config, "file_name_overridden")
-        CDataBinding.bind(export_file_name_input, "text", self.controller.asset.export_config, "file_name")
+        data_binding.bind(export_file_name_input, "enabled", self.controller.asset.export_config, "file_name_overridden")
+        data_binding.bind(export_file_name_input, "text", self.controller.asset.export_config, "file_name")
         self.add_control(export_file_name_input)
 
 
@@ -175,8 +175,8 @@ class AssetManagementToolUI(ui.CUI):
             default_value=self.controller.asset.save_config.path,\
             open_command=self.controller.open_save_path_explorer,\
         )
-        CDataBinding.bind(save_path_input, "enabled", self.controller.asset.save_config, "path_overridden")
-        CDataBinding.bind(save_path_input, "text", self.controller.asset.save_config, "path")
+        data_binding.bind(save_path_input, "enabled", self.controller.asset.save_config, "path_overridden")
+        data_binding.bind(save_path_input, "text", self.controller.asset.save_config, "path")
         self.add_control(save_path_input)
 
         publish_path_input = ui.CFilePathInput("publish_path", "Publish path", frm_path_preview,\
@@ -185,8 +185,8 @@ class AssetManagementToolUI(ui.CUI):
             default_value=self.controller.asset.publish_config.path,\
             open_command=self.controller.open_publish_path_explorer,\
         )
-        CDataBinding.bind(publish_path_input, "enabled", self.controller.asset.publish_config, "path_overridden")
-        CDataBinding.bind(publish_path_input, "text", self.controller.asset.publish_config, "path")
+        data_binding.bind(publish_path_input, "enabled", self.controller.asset.publish_config, "path_overridden")
+        data_binding.bind(publish_path_input, "text", self.controller.asset.publish_config, "path")
         self.add_control(publish_path_input)
 
         export_path_input = ui.CFilePathInput("export_path", "Export path", frm_path_preview,\
@@ -195,8 +195,8 @@ class AssetManagementToolUI(ui.CUI):
             default_value=self.controller.asset.export_config.path,\
             open_command=self.controller.open_export_path_explorer,\
         )
-        CDataBinding.bind(export_path_input, "enabled", self.controller.asset.export_config, "path_overridden")
-        CDataBinding.bind(export_path_input, "text", self.controller.asset.export_config, "path")
+        data_binding.bind(export_path_input, "enabled", self.controller.asset.export_config, "path_overridden")
+        data_binding.bind(export_path_input, "text", self.controller.asset.export_config, "path")
         self.add_control(export_path_input)
 
 

@@ -1,9 +1,13 @@
+"""Module that contains a variety of functions and classes used to bind classes' properties together."""
 
 
-class CBinding():
+class CBinding(object):
+    """Description of a binding between two bindable objects : the source object (children of this class) and the destination object."""
 
     @property
     def obj(self):
+        """The instance of the destination object that has the binded property."""
+
         return self.__obj
 
     @obj.setter
@@ -13,6 +17,8 @@ class CBinding():
 
     @property
     def obj_prop(self):
+        """The destination object's binded property's name."""
+
         return self.__obj_prop
 
     @obj_prop.setter
@@ -22,6 +28,8 @@ class CBinding():
 
     @property
     def prop(self):
+        """The property's name of the source object itself."""
+
         return self.__prop
 
     @prop.setter
@@ -50,6 +58,8 @@ class CBinding():
 
 
     def update_prop(self, value):
+        """Update the destination object's property value with the new source object's property value."""
+
         obj_type = type(self.__obj)
 
         if self.__obj_prop not in obj_type.__dict__:
@@ -123,7 +133,7 @@ class CBindable():
 
 
 def bind(obj_a, obj_a_property, obj_b, obj_b_property, two_way=True):
-    """Bind a object's property to another object's property."""
+    """Binds a object's property to another object's property."""
 
     if is_valid_property(obj_a, obj_a_property) and is_valid_property(obj_b, obj_b_property):
         binding_a = CBinding(obj_a, obj_a_property, obj_b_property)
@@ -137,7 +147,7 @@ def bind(obj_a, obj_a_property, obj_b, obj_b_property, two_way=True):
 
 
 def unbind(obj_a, obj_a_property, obj_b, obj_b_property, two_way=True):
-    """Unbind a object's property from another object's property."""
+    """Unbinds a object's property from another object's property."""
 
     if is_valid_property(obj_a, obj_a_property) and is_valid_property(obj_b, obj_b_property):
         binding_a = CBinding(obj_a, obj_a_property, obj_b_property)
