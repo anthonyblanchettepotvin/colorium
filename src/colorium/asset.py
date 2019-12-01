@@ -4,6 +4,7 @@ from colorium.configuration import CConfiguration
 import colorium.data_binding as data_binding
 import colorium.command as command
 import colorium.naming_convention as naming_convention
+import colorium.settings as settings
 
 
 class CAsset(object, data_binding.CBindable):
@@ -240,7 +241,7 @@ class CAsset(object, data_binding.CBindable):
             self._save_config = CConfiguration("save", self,\
                 file_name_generator_function=naming_convention.generate_file_name_for_saved_asset,\
                 path_generator_function=naming_convention.generate_path_for_saved_asset,\
-                default_command=command.get_command('save', 'Maya Ascii'),\
+                default_command=command.get_command('save', settings.DEFAULT_FILE_FORMAT),\
                 )
 
         if publish_config:
@@ -249,7 +250,7 @@ class CAsset(object, data_binding.CBindable):
             self._publish_config = CConfiguration("publish", self,\
                 file_name_generator_function=naming_convention.generate_file_name_for_published_asset,\
                 path_generator_function=naming_convention.generate_path_for_published_asset,\
-                default_command=command.get_command('publish', 'Maya Ascii'),\
+                default_command=command.get_command('publish', settings.DEFAULT_FILE_FORMAT),\
                 )
 
         if export_config:
@@ -258,7 +259,7 @@ class CAsset(object, data_binding.CBindable):
             self._export_config = CConfiguration("export", self,\
                 file_name_generator_function=naming_convention.generate_file_name_for_exported_asset,\
                 path_generator_function=naming_convention.generate_path_for_exported_asset,\
-                default_command=command.get_command('export', 'Maya Ascii'),\
+                default_command=command.get_command('export', settings.DEFAULT_FILE_FORMAT),\
                 )
 
 

@@ -92,15 +92,18 @@ def __open_explorer(config):
     os.startfile(path)
 
 
-def __open_scene(config):
-    """Open the Maya scene based on the configuration."""
+def __open_maya_ascii(config):
+    """Open a Maya Ascii scene based on a configuration."""
 
-    if not os.path.exists(config.path + config.fileName + ".ma"):
+    full_file_name = config.path + config.file_name + '.ma'
+
+    if not os.path.exists(full_file_name):
         cmds.confirmDialog(
-            title="Cannot open asset",
-            message="The asset cannot be opened. Please, make sure the asset information is correct.",
-            button=["Ok"],
-            defaultButton="Ok"
+            title='Cannot open Maya Ascii scene',
+            message='Couldn\'t open the following Maya Ascii scene file : \"{}\". Please, make sure the asset information and file format are correct.'.format(full_file_name),
+            button=['Ok'],
+            defaultButton='Ok',
+            icon='warning',
         )
 
         return
@@ -110,20 +113,47 @@ def __open_scene(config):
         cmds.file(s=True)
         cmds.file(new=True)
 
-    cmds.file(config.path + config.fileName + ".ma", f=True, o=True, iv=True)
+    cmds.file(full_file_name, f=True, o=True, iv=True, typ='mayaAscii')
+
+
+def __open_maya_binary(config):
+    """Open a Maya Binary scene based on a configuration."""
+
+    full_file_name = config.path + config.file_name + '.mb'
+
+    if not os.path.exists(full_file_name):
+        cmds.confirmDialog(
+            title='Cannot open Maya Binary scene',
+            message='Couldn\'t open the following Maya Binary scene file : \"{}\". Please, make sure the asset information and file format are correct.'.format(full_file_name),
+            button=['Ok'],
+            defaultButton='Ok',
+            icon='warning',
+        )
+
+        return
+
+    current_scene_name = cmds.file(q=True, sn=True)
+    if current_scene_name:
+        cmds.file(s=True)
+        cmds.file(new=True)
+
+    cmds.file(full_file_name, f=True, o=True, iv=True, typ='mayaBinary')
 
 
 def __create_blank_maya_ascii(config):
-    """Create a blank Maya Ascii scene based on the configuration."""
+    """Create a blank Maya Ascii scene based on a configuration."""
+
+    full_file_name = config.path + config.file_name + '.ma'
 
     if not os.path.exists(config.path):
         os.makedirs(config.path)
-    else:
+    elif os.path.exists(full_file_name):
         cmds.confirmDialog(
-            title="Cannot create asset",
-            message="The asset cannot be created, because an asset already exists for this configuration. Please, delete the original or change the configuration.",
-            button=["Ok"],
-            defaultButton="Ok"
+            title='Cannot create Maya Ascii scene',
+            message='The following Maya Ascii scene already exists : \"{}\". Please, delete the original or change the asset information.'.format(full_file_name),
+            button=['Ok'],
+            defaultButton='Ok',
+            icon='warning',
         )
 
         return
@@ -133,8 +163,95 @@ def __create_blank_maya_ascii(config):
         cmds.file(s=True)
         cmds.file(new=True)
 
-    cmds.file(rn=config.path + config.fileName)
+    cmds.file(rn=full_file_name)
     cmds.file(s=True, typ="mayaAscii")
+
+
+def __create_blank_maya_binary(config):
+    """Create a blank Maya Binary scene based on a configuration."""
+
+    full_file_name = config.path + config.file_name + '.mb'
+
+    if not os.path.exists(config.path):
+        os.makedirs(config.path)
+    elif os.path.exists(full_file_name):
+        cmds.confirmDialog(
+            title='Cannot create Maya Binary scene',
+            message='The following Maya Binary scene already exists : \"{}\". Please, delete the original or change the asset information.'.format(full_file_name),
+            button=['Ok'],
+            defaultButton='Ok',
+            icon='warning',
+        )
+
+        return
+
+    current_scene_name = cmds.file(q=True, sn=True)
+    if current_scene_name:
+        cmds.file(s=True)
+        cmds.file(new=True)
+
+    cmds.file(rn=full_file_name)
+    cmds.file(s=True, typ="mayaBinary")
+
+
+def __delete_maya_ascii(config):
+    """The a Maya Ascii scene file based on a configuration."""
+
+    full_file_name = config.path + config.file_name + '.ma'
+
+    if not os.path.exists(full_file_name):
+        cmds.confirmDialog(
+            title='Cannot delete Maya Ascii scene',
+            message='The following Maya Ascii scene file doesn\'t exists : \"{}\". Please, make sure the asset information and file format are correct.'.format(full_file_name),
+            button=['Ok'],
+            defaultButton='Ok',
+            icon='warning',
+        )
+
+        return
+
+    answer = cmds.confirmDialog(
+        title='Delete Maya Ascii scene file',
+        message='Are you sure you want to delete de following Maya Ascii scene file : \"{}\" ?'.format(full_file_name),
+        button=['Cancel', 'Ok'],
+        defaultButton='Ok',
+        cancelButton='Cancel',
+        dismissString='Cancel',
+        icon='critical',
+    )
+
+    if answer == 'Ok':
+        os.remove(full_file_name)
+
+
+def __delete_maya_binary(config):
+    """The a Maya Binary scene file based on a configuration."""
+
+    full_file_name = config.path + config.file_name + '.mb'
+
+    if not os.path.exists(full_file_name):
+        cmds.confirmDialog(
+            title='Cannot delete Maya Binary scene',
+            message='The following Maya Binary scene file doesn\'t exists : \"{}\". Please, make sure the asset information and file format are correct.'.format(full_file_name),
+            button=['Ok'],
+            defaultButton='Ok',
+            icon='warning',
+        )
+
+        return
+
+    answer = cmds.confirmDialog(
+        title='Delete Maya Binary scene file',
+        message='Are you sure you want to delete de following Maya Binary scene file : \"{}\" ?'.format(full_file_name),
+        button=['Cancel', 'Ok'],
+        defaultButton='Ok',
+        cancelButton='Cancel',
+        dismissString='Cancel',
+        icon='critical',
+    )
+
+    if answer == 'Ok':
+        os.remove(full_file_name)
 
 
 def __save_maya_ascii(config):
@@ -143,7 +260,7 @@ def __save_maya_ascii(config):
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
-    cmds.file(rn=config.path + config.fileName)
+    cmds.file(rn=config.path + config.file_name)
     cmds.file(s=True, typ="mayaAscii")
 
 
@@ -153,7 +270,7 @@ def __save_maya_binary(config):
     if not os.path.exists(config.path):
         os.makedirs(config.path)
 
-    cmds.file(rn=config.path + config.fileName)
+    cmds.file(rn=config.path + config.file_name)
     cmds.file(s=True, typ="mayaBinary")
 
 
@@ -174,7 +291,7 @@ def __publish_maya_ascii(config):
 
         return
 
-    cmds.file(config.path + config.fileName, es=True, typ="mayaAscii")
+    cmds.file(config.path + config.file_name, es=True, typ="mayaAscii")
 
 
 def __publish_maya_binary(config):
@@ -194,7 +311,7 @@ def __publish_maya_binary(config):
 
         return
 
-    cmds.file(config.path + config.fileName, es=True, typ="mayaBinary")
+    cmds.file(config.path + config.file_name, es=True, typ="mayaBinary")
 
 
 def __publish_maya_geometry_cache(config):
@@ -218,7 +335,7 @@ def __publish_maya_geometry_cache(config):
     start_frame = cmds.playbackOptions(q=True, ast=True)
     end_frame = cmds.playbackOptions(q=True, aet=True)
 
-    cmds.cacheFile(f=config.fileName, dir=config.path, pts=selected_shapes, st=start_frame, et=end_frame, r=True, ws=True, fm="OneFile", sch=True)
+    cmds.cacheFile(f=config.file_name, dir=config.path, pts=selected_shapes, st=start_frame, et=end_frame, r=True, ws=True, fm="OneFile", sch=True)
 
 
 def __export_maya_ascii(config):
@@ -238,7 +355,7 @@ def __export_maya_ascii(config):
 
         return
 
-    cmds.file(config.path + config.fileName, es=True, typ="mayaAscii")
+    cmds.file(config.path + config.file_name, es=True, typ="mayaAscii")
 
 
 def __export_maya_binary(config):
@@ -258,7 +375,7 @@ def __export_maya_binary(config):
 
         return
 
-    cmds.file(config.path + config.fileName, es=True, typ="mayaBinary")
+    cmds.file(config.path + config.file_name, es=True, typ="mayaBinary")
 
 
 def __export_alembic(config):
@@ -281,8 +398,12 @@ def __export_obj(config):
 
 COMMANDS = []
 COMMANDS.append(CConcreteCommand("open", "Explorer", __open_explorer))
-COMMANDS.append(CConcreteCommand("open", "Scene", __open_scene))
+COMMANDS.append(CConcreteCommand("open", "Maya Ascii", __open_maya_ascii))
+COMMANDS.append(CConcreteCommand("open", "Maya Binary", __open_maya_binary))
 COMMANDS.append(CConcreteCommand("create", "Blank Maya Ascii", __create_blank_maya_ascii))
+COMMANDS.append(CConcreteCommand("create", "Blank Maya Binary", __create_blank_maya_binary))
+COMMANDS.append(CConcreteCommand("delete", "Maya Ascii", __delete_maya_ascii))
+COMMANDS.append(CConcreteCommand("delete", "Maya Binary", __delete_maya_binary))
 COMMANDS.append(CConcreteCommand("save", "Maya Ascii", __save_maya_ascii))
 COMMANDS.append(CConcreteCommand("save", "Maya Binary", __save_maya_binary))
 COMMANDS.append(CConcreteCommand("publish", "Maya Ascii", __publish_maya_ascii))

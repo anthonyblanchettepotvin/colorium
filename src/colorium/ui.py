@@ -605,7 +605,7 @@ class CFilePathInput(CControl, CToggleable):
             cmds.separator("sep_{}".format(self._name), vis=False)
 
         cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
-        cmds.textField("txt_{}".format(self._name), p=layout, tx=self.__text, en=self.__enabled, tcc=self.text_changed)
+        cmds.textField("txt_{}".format(self._name), p=layout, tx=self.__text, en=self.__enabled, cc=self.text_changed)
         cmds.button("btn_open_{}".format(self._name), p=layout, l="Open", w=60, c=self.__open_command)
 
 
@@ -640,3 +640,47 @@ class CButtonControl(CControl):
         """Method used to build the control's UI."""
 
         cmds.button("btn_{}".format(self._name), l=self._title, p=self._parent, w=60, c=self._command)
+
+
+class CCheckControl(CControl):
+    """Class that represents a Check Controle. Used to be turned on or off."""
+
+    @property
+    def value(self):
+        """The value of the Check Control."""
+
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        self.__value = value
+
+        cmds.checkBox("chk_{}".format(self._name), e=True, v=value)
+
+        self.notify_property_changed("value", value)
+        print('\'value\' property of CCheckControl set to \'{}\'').format(value)
+
+
+    def __init__(self, name, title, parent, changed_command=None, default_value=False):
+        super(CCheckControl, self).__init__(name, title, parent)
+
+        self.__value = default_value
+        self.__changed_command = changed_command if changed_command else lambda value: NotImplemented
+
+
+    def build_ui(self):
+        """Method used to build the control's UI."""
+
+        layout = cmds.rowLayout("lay_{}".format(self._name), p=self._parent, nc=3, cat=[(2, "right", 5)], cw=[(1, 25), (2, 100)], adj=3)
+
+        cmds.separator("sep_{}".format(self._name), vis=False)
+        cmds.text("lbl_{}".format(self._name), p=layout, l=self._title, al="right")
+        cmds.checkBox("chk_{}".format(self._name), p=layout, l="", v=self.__value, cc=self.value_changed)
+
+
+    def value_changed(self, value):
+        """Method called when the Check Control's value changed."""
+
+        self.__changed_command(value)
+
+        self.value = value

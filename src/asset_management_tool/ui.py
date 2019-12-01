@@ -6,6 +6,7 @@ import colorium.asset_type_definition as asset_type_definition
 import colorium.scene_name_parser as scene_name_parser
 import colorium.command as command
 import colorium.data_binding as data_binding
+import colorium.settings as settings
 
 
 class AssetManagementToolUI(ui.CUI):
@@ -99,6 +100,11 @@ class AssetManagementToolUI(ui.CUI):
             default_value=self.controller.asset.save_config.command.name,\
         )
         self.add_control(save_input)
+
+        increment_option = ui.CCheckControl("increment_on_save", "Increment on save", frm_save_options,\
+            default_value=False,\
+        )
+        self.add_control(increment_option)
 
 
     def build_publish_options_section(self):
@@ -252,27 +258,40 @@ class AssetManagementToolController(ui.CController):
     def cancel(self, value):
         """Command used to close the tool."""
 
-        print "Cancel"
+        cmds.deleteUI(self.ui.main_window, wnd=True)
 
 
     def open(self, value):
         """Command used to open a maya scene based on the asset data."""
 
-        self.asset.save_config.command = command.get_command("open", "Scene")
+        if settings.DEFAULT_FILE_FORMAT == 'Maya Ascii':
+            self.asset.save_config.command = command.get_command('open', 'Maya Ascii')
+        elif settings.DEFAULT_FILE_FORMAT == 'Maya Binary':
+            self.asset.save_config.command = command.get_command('open', 'Maya Binary')
+
         self.asset.save_config.execute_command()
 
 
     def create(self, value):
         """Command used to create a maya scene based on the asset data."""
 
-        self.asset.save_config.command = command.get_command("create", "Blank Maya Ascii")
+        if settings.DEFAULT_FILE_FORMAT == 'Maya Ascii':
+            self.asset.save_config.command = command.get_command("create", "Blank Maya Ascii")
+        elif settings.DEFAULT_FILE_FORMAT == 'Maya Binary':
+            self.asset.save_config.command = command.get_command('create', 'Blank Maya Binary')
+
         self.asset.save_config.execute_command()
 
 
     def delete(self, value):
         """Command used to delete a maya scene based on the asset data."""
 
-        print "Delete"
+        if settings.DEFAULT_FILE_FORMAT == 'Maya Ascii':
+            self.asset.save_config.command = command.get_command("delete", "Maya Ascii")
+        elif settings.DEFAULT_FILE_FORMAT == 'Maya Binary':
+            self.asset.save_config.command = command.get_command('delete', 'Maya Binary')
+
+        self.asset.save_config.execute_command()
 
 
     def commit(self, value):
@@ -283,6 +302,11 @@ class AssetManagementToolController(ui.CController):
         export_enabled = self.ui.get_control_by_name("export_type").enabled
 
         if save_enabled:
+            increment_on_save = self.ui.get_control_by_name('increment_on_save').value
+
+            if increment_on_save:
+                self.asset.version += 1
+
             self.asset.save_config.execute_command()
 
         if publish_enabled:

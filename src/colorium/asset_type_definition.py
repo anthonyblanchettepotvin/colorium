@@ -1,5 +1,8 @@
 """Module where all the Colorium Asset Type Definitions are centralized."""
 
+import colorium.settings as settings
+
+
 class CAssetTypeDefinition(object):
     """Defines important variables of an asset's naming convention and its various save/export locations."""
 
@@ -46,117 +49,113 @@ class CAssetTypeDefinition(object):
         self._export_dir = export_dir
 
 
-SAVE_BASE_PATH = "Y:/project/maya_work/scenes"
-PUBLISH_BASE_PATH = "Y:/project/maya_work/assets"
-EXPORT_PATH = "Y:/project/exports/maya"
-
 ASSET_TYPES = []
 
 NONE_TYPE = CAssetTypeDefinition(
     code="non",
     name="None",
-    save_dir=SAVE_BASE_PATH + "/nones",
-    publish_dir=PUBLISH_BASE_PATH + "/nones",
-    export_dir=EXPORT_PATH + "/nones"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/nones",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/nones",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/nones"
 )
 ASSET_TYPES.append(NONE_TYPE)
 
 MODEL_TYPE = CAssetTypeDefinition(
     code="mdl",
     name="Model",
-    save_dir=SAVE_BASE_PATH + "/models",
-    publish_dir=PUBLISH_BASE_PATH + "/models",
-    export_dir=EXPORT_PATH + "/models"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/models",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/models",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/models"
 )
 ASSET_TYPES.append(MODEL_TYPE)
 
 ANIMATION_TYPE = CAssetTypeDefinition(
     code="anm",
     name="Animation",
-    save_dir=SAVE_BASE_PATH + "/animations",
-    publish_dir=PUBLISH_BASE_PATH + "/animations",
-    export_dir=EXPORT_PATH + "/animations"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/animations",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/animations",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/animations"
 )
 ASSET_TYPES.append(ANIMATION_TYPE)
 
 RIG_TYPE = CAssetTypeDefinition(
     code="rig",
     name="Rig",
-    save_dir=SAVE_BASE_PATH + "/rigs",
-    publish_dir=PUBLISH_BASE_PATH + "/rigs",
-    export_dir=EXPORT_PATH + "/rigs"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/rigs",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/rigs",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/rigs"
 )
 ASSET_TYPES.append(RIG_TYPE)
 
 LAYOUT_TYPE = CAssetTypeDefinition(
     code="lay",
     name="Layout",
-    save_dir=SAVE_BASE_PATH + "/layouts",
-    publish_dir=PUBLISH_BASE_PATH + "/layouts",
-    export_dir=EXPORT_PATH + "/layouts"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/layouts",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/layouts",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/layouts"
 )
 ASSET_TYPES.append(LAYOUT_TYPE)
 
 PROXY_TYPE = CAssetTypeDefinition(
     code="prx",
     name="Proxy",
-    save_dir=SAVE_BASE_PATH + "/proxies",
-    publish_dir=PUBLISH_BASE_PATH + "/proxies",
-    export_dir=EXPORT_PATH + "/proxies"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/proxies",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/proxies",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/proxies"
 )
 ASSET_TYPES.append(PROXY_TYPE)
 
 SIMULATION_TYPE = CAssetTypeDefinition(
     code="sim",
     name="Simulation",
-    save_dir=SAVE_BASE_PATH + "/simulations",
-    publish_dir=PUBLISH_BASE_PATH + "/simulations",
-    export_dir=EXPORT_PATH + "/simulations"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/simulations",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/simulations",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/simulations"
 )
 ASSET_TYPES.append(SIMULATION_TYPE)
 
 RENDER_TYPE = CAssetTypeDefinition(
     code="rnd",
     name="Render",
-    save_dir=SAVE_BASE_PATH + "/renders",
-    publish_dir=PUBLISH_BASE_PATH + "/renders",
-    export_dir=EXPORT_PATH + "/renders"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/renders",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/renders",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/renders"
 )
 ASSET_TYPES.append(RENDER_TYPE)
 
 TEST_TYPE = CAssetTypeDefinition(
     code="tst",
     name="Test",
-    save_dir=SAVE_BASE_PATH + "/tests",
-    publish_dir=PUBLISH_BASE_PATH + "/tests",
-    export_dir=EXPORT_PATH + "/tests"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/tests",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/tests",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/tests"
 )
 ASSET_TYPES.append(TEST_TYPE)
 
 KIT_TYPE = CAssetTypeDefinition(
     code="kit",
     name="Kit",
-    save_dir=SAVE_BASE_PATH + "/kits",
-    publish_dir=PUBLISH_BASE_PATH + "/kits",
-    export_dir=EXPORT_PATH + "/kits"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/kits",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/kits",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/kits"
 )
 ASSET_TYPES.append(KIT_TYPE)
 
 CAMERA_TYPE = CAssetTypeDefinition(
     code="cam",
     name="Camera",
-    save_dir=SAVE_BASE_PATH + "/cameras",
-    publish_dir=PUBLISH_BASE_PATH + "/cameras",
-    export_dir=EXPORT_PATH + "/cameras"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/cameras",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/cameras",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/cameras"
 )
 ASSET_TYPES.append(CAMERA_TYPE)
 
 LIGHTING_TYPE = CAssetTypeDefinition(
     code="ltg",
     name="Lighting",
-    save_dir=SAVE_BASE_PATH + "/lightings",
-    publish_dir=PUBLISH_BASE_PATH + "/lightings",
-    export_dir=EXPORT_PATH + "/lightings"
+    save_dir=settings.ASSET_SAVE_BASE_FOLDER + "/lightings",
+    publish_dir=settings.ASSET_PUBLISH_BASE_FOLDER + "/lightings",
+    export_dir=settings.ASSET_EXPORT_BASE_FOLDER + "/lightings"
 )
 ASSET_TYPES.append(LIGHTING_TYPE)
 
