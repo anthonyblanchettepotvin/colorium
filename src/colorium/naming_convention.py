@@ -7,10 +7,12 @@ import colorium.asset_type_definition as asset_type_definition
 class CNamingConvention:
     """Validates the name of a file based on a naming convention's rules."""
 
-    variant_pattern = r"(?<=_)\d{2}(?=_)"
-    scene_pattern = r"(?<=_)\d{3}(?=-)"
-    shot_pattern = r"(?<=-)\d{3}(?=_)"
-    version_pattern = r"(?<=_)v\d{3}(?=.)"
+    type_pattern = r"/\b([a-z]{3})\b/gi"
+    name_pattern = r'/\b([a-z]{4,})\b/gi'
+    variant_pattern = r"(?<=_)\d{2}(?=_)" #/\b([0-9]{2})\b/g
+    scene_pattern = r"(?<=_)\d{3}(?=-)" #/\b([0-9]{3})\b/g
+    shot_pattern = r"(?<=-)\d{3}(?=_)" #/\b([0-9]{3})\b/g
+    version_pattern = r"(?<=_)v\d{3}(?=.)" #/\b(v[0-9]{3})\b/gi
 
 
     def __init__(self, variant_pattern="", scene_pattern="", shot_pattern="", version_pattern=""):
