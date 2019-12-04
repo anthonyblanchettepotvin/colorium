@@ -102,21 +102,54 @@ class NamingConvention(object):
 
 
     @property
+    def separator(self):
+        """The separator used to separate each variable in the name."""
+
+        return self.__separator
+
+
+    @property
     def mandatory_rules(self):
         """The list of mandatory rules."""
 
         mandatory_rules = []
 
-        for rule in self.__rules:
+        for rule in self.rules:
             if not rule.optional:
                 mandatory_rules.append(rule)
 
         return mandatory_rules
 
 
-    def __init__(self, rules=None):
-        self.__rules = rules if rules else []
+    @property
+    def rules_met(self):
+        """The list of rules that are met."""
 
+        rules_met = []
+
+        for rule in self.rules:
+            if rule.met:
+                rules_met.append(rule)
+
+        return rules_met
+
+
+    @property
+    def reconstructed_name(self):
+        """The name back to it's original state."""
+
+        reconstructed_name = ''
+
+        for rule in self.rules_met:
+            reconstructed_name += rule.formatted_value
+            reconstructed_name += self.separator if not rule is self.rules_met[-1] else ''
+
+        return reconstructed_name
+
+
+    def __init__(self, rules=None, separator='_'):
+        self.__rules = rules if rules else []
+        self.__separator = separator
 
     def add_rule(self, rule):
         """Adds a rule to the list."""
@@ -124,8 +157,8 @@ class NamingConvention(object):
         if self.rule_exists(rule.name):
             raise DuplicateNameError(rule.name, 'Cannot have two rules with the same name.')
 
-        if rule not in self.__rules:
-            self.__rules.append(rule)
+        if rule not in self.rules:
+            self.rules.append(rule)
         else:
             raise DuplicateRuleError(rule, 'Cannot add the same rule twice.')
 
@@ -140,7 +173,7 @@ class NamingConvention(object):
             Returns True if one rule with the same name exists, False otherwise.
         """
 
-        for rule in self.__rules:
+        for rule in self.rules:
             if rule.name == name:
                 return True
 
@@ -150,8 +183,8 @@ class NamingConvention(object):
     def remove_rule(self, rule):
         """Deletes a rule from the list."""
 
-        if rule in self.__rules:
-            self.__rules.remove(rule)
+        if rule in self.rules:
+            self.rules.remove(rule)
 
 
     def evaluate_name(self, name):
@@ -164,10 +197,10 @@ class NamingConvention(object):
             Returns True if all the mandatory rules are met, False if not.
         """
 
-        variables = name.split('_')
+        variables = name.split(self.separator)
 
-        if len(variables) > len(self.__rules):
-            raise TooManyVariablesError(len(variables), len(self.__rules), 'The name has too many variables.')
+        if len(variables) > len(self.rules):
+            raise TooManyVariablesError(len(variables), len(self.rules), 'The name has too many variables.')
 
         if len(variables) < len(self.mandatory_rules):
             raise NotEnoughVariablesError(len(variables), len(self.mandatory_rules), 'The name doesn\'t have enough variables.')
@@ -190,7 +223,7 @@ class NamingConvention(object):
             Returns True if one of the rules is met, False otherwise.
         """
 
-        for rule in self.__rules:
+        for rule in self.rules:
             if not rule.met:
                 if rule.evaluate_variable(variable):
                     return True
@@ -206,8 +239,8 @@ class NamingConvention(object):
             Returns True if all the mandatory rules are met, False if not.
         """
 
-        for rule in self.__rules:
-            if not rule.met and not rule.optional:
+        for rule in self.mandatory_rules:
+            if not rule.met:
                 return False
 
         return True
@@ -221,7 +254,7 @@ class NamingConvention(object):
             Returns True if all the rules are met, False if not.
         """
 
-        for rule in self.__rules:
+        for rule in self.rules:
             if not rule.met:
                 return False
 
@@ -262,6 +295,13 @@ class Rule(object):
         pass
 
 
+    @abstractproperty
+    def formatted_value(self):
+        """The value back in it's initial form."""
+
+        pass
+
+
     @abstractmethod
     def evaluate_variable(self, variable):
         """Checks if the rule is respected by the variable."""
@@ -293,6 +333,11 @@ class RegexRule(Rule):
 
 
     @property
+    def formatted_value(self):
+        return self.__value
+
+
+    @property
     def expression(self):
         """The regular expression used to validate the rule."""
 
@@ -319,7 +364,7 @@ class RegexRule(Rule):
         return self.__met
 
 
-class ComposedRegexRule(Rule):
+class InternalNamingConventionRule(Rule):
     """Object that determine if a part of the name composed by multiple sub-variables each matches a regular expression."""
 
     @property
@@ -342,71 +387,85 @@ class ComposedRegexRule(Rule):
         return self.__optional
 
 
-    def __init__(self, name, optional=False, rules=None, separator=''):
+    @property
+    def formatted_value(self):
+        return self.naming_convention.reconstructed_name
+
+
+    @property
+    def naming_convention(self):
+        """The naming convention used internally by the rule."""
+
+        return self.__naming_convention
+
+
+    def __init__(self, name, optional=False, rules=None, separator='-'):
         self.__name = name
         self.__met = False
         self.__value = {}
         self.__optional = optional
-        self.__rules = rules if rules else []
-        self.__separator = separator
+
+        self.__naming_convention = NamingConvention(rules, separator)
 
 
     def add_rule(self, rule):
         """Adds a rule to the list."""
 
-        if rule not in self.__rules:
-            self.__rules.append(rule)
+        self.naming_convention.add_rule(rule)
 
 
     def remove_rule(self, rule):
         """Deletes a rule from the list."""
 
-        if rule in self.__rules:
-            self.__rules.remove(rule)
+        self.naming_convention.remove_rule(rule)
 
 
     def evaluate_variable(self, variable):
-        sub_variables = variable.split(self.__separator)
+        try:
+            self.__met = self.naming_convention.evaluate_name(variable)
+        except IntruderError:
+            return self.met
 
-        for sub_variable in sub_variables:
-            for rule in self.__rules:
-                if not rule.met:
-                    if rule.evaluate_variable(sub_variable):
-                        self.__value[rule.name] = rule.value
-                        break
+        if self.__met:
+            for rule in self.naming_convention.rules:
+                if rule.met:
+                    self.__value[rule.name] = rule.value
 
-        for rule in self.__rules:
-            if not rule.met and not rule.optional:
-                self.__met = False
-                return self.__met
-
-        self.__met = True
-        return self.__met
+        return self.met
 
 
 NC = NamingConvention()
 
-RULE_TYPE = RegexRule('type', r'\b([a-z]{3})\b', False)
+RULE_TYPE = RegexRule('type', r'^[a-z]{3}$', False)
 NC.add_rule(RULE_TYPE)
 
-RULE_NAME = RegexRule('name', r'\b([a-zA-Z]+)\b', False)
+RULE_NAME = RegexRule('name', r'^[a-zA-Z]+$', True)
 NC.add_rule(RULE_NAME)
 
-RULE_VARIANT = RegexRule('variant', r'\b([0-9]{2})\b', True)
+RULE_VARIANT = RegexRule('variant', r'^\d{2}$', True)
 NC.add_rule(RULE_VARIANT)
 
-RULE_SCENE_SHOT = ComposedRegexRule('scene_shot', optional=True, separator='-')
+RULE_SCENE_SHOT = InternalNamingConventionRule('scene_shot', True)
 NC.add_rule(RULE_SCENE_SHOT)
 
-RULE_SCENE = RegexRule('scene', r'\b([0-9]{3})\b', False)
+RULE_SCENE = RegexRule('scene', r'^\d{3}$', False)
 RULE_SCENE_SHOT.add_rule(RULE_SCENE)
 
-RULE_SHOT = RegexRule('shot', r'\b([0-9]{3})\b', True)
+RULE_SHOT = RegexRule('shot', r'^\d{3}$', True)
 RULE_SCENE_SHOT.add_rule(RULE_SHOT)
 
-RULE_VERSION = RegexRule('version', r'\b(v[0-9]{3})\b', False)
+FOO_BAR_SHOT = InternalNamingConventionRule('foo_bar', False, separator='.')
+RULE_SCENE_SHOT.add_rule(FOO_BAR_SHOT)
+
+RULE_FOO = RegexRule('foo', r'^\d{3}$', False)
+FOO_BAR_SHOT.add_rule(RULE_FOO)
+
+RULE_BAR = RegexRule('bar', r'^\d{3}$', True)
+FOO_BAR_SHOT.add_rule(RULE_BAR)
+
+RULE_VERSION = RegexRule('version', r'^v\d{3}$', False)
 NC.add_rule(RULE_VERSION)
 
-print NC.evaluate_name('mdl_policeCar_v001')
+print NC.evaluate_name('mdl_policeCar_01_020-020-123.256_v001')
 
-print RULE_SCENE_SHOT.value
+print NC.reconstructed_name
