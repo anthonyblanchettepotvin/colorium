@@ -2,6 +2,7 @@
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 import re as regex
+from colorium.asset import CAsset
 
 
 class NamingConventionError(Exception):
@@ -584,7 +585,7 @@ class InternalNamingConventionRule(Rule):
             Returns the rule if it finds it, returns None otherwise.
         """
 
-        self.naming_convention.get_rule(name)
+        return self.naming_convention.get_rule(name)
 
 
     def evaluate_variable(self, variable):
@@ -608,27 +609,94 @@ class InternalNamingConventionRule(Rule):
 
 NC = NamingConvention()
 
-RULE_TYPE = RegexRule('type', r'^[a-z]{3}$', False)
-NC.add_rule(RULE_TYPE)
+TYPE_RULE = RegexRule('type', r'^[a-z]{3}$', False)
+NC.add_rule(TYPE_RULE)
 
-RULE_NAME = RegexRule('name', r'^[a-zA-Z]+$', True)
-NC.add_rule(RULE_NAME)
+NAME_RULE = RegexRule('name', r'^[a-zA-Z]+$', True)
+NC.add_rule(NAME_RULE)
 
-RULE_VARIANT = MultipleRegexRule('variant', [r'^\d{2}$', r'^[a-zA-Z]+$'], True)
-NC.add_rule(RULE_VARIANT)
+VARIANT_RULE = MultipleRegexRule('variant', [r'^\d{2}$', r'^[a-zA-Z]+$'], True)
+NC.add_rule(VARIANT_RULE)
 
-RULE_SCENE_SHOT = InternalNamingConventionRule('scene_shot', True)
-NC.add_rule(RULE_SCENE_SHOT)
+SCENE_SHOT_RULE = InternalNamingConventionRule('scene_shot', True)
+NC.add_rule(SCENE_SHOT_RULE)
 
-RULE_SCENE = RegexRule('scene', r'^\d{3}$', False)
-RULE_SCENE_SHOT.add_rule(RULE_SCENE)
+SCENE_RULE = RegexRule('scene', r'^\d{3}$', False)
+SCENE_SHOT_RULE.add_rule(SCENE_RULE)
 
-RULE_SHOT = RegexRule('shot', r'^\d{3}$', True)
-RULE_SCENE_SHOT.add_rule(RULE_SHOT)
+SHOT_RULE = RegexRule('shot', r'^\d{3}$', True)
+SCENE_SHOT_RULE.add_rule(SHOT_RULE)
 
-RULE_VERSION = MultipleRegexRule('version', [r'^v\d{3}$', r'^publish$', r'^export$'], False)
-NC.add_rule(RULE_VERSION)
+VERSION_RULE = MultipleRegexRule('version', [r'^v\d{3}$', r'^publish$', r'^export$'], False)
+NC.add_rule(VERSION_RULE)
 
-print NC.evaluate_name('mdl_policeCar_crashed_010_v001')
 
-print NC.reconstructed_name
+def validate_name(name):
+    """
+    Validates a name using the naming convention described in this file.
+
+    Parameters:
+        name -- The name to validate.
+    """
+
+    return NC.evaluate_name(name)
+
+
+def name_to_asset(name, asset):
+    """
+    Validates a name and assign all the values into an asset.
+
+    Parameters:
+        name -- The name to validate.
+        asset -- The asset to which the values will be assigned.
+    """
+
+    NC.evaluate_name(name)
+
+    if not isinstance(asset, CAsset):
+        raise TypeError()
+
+    # Set the asset's type
+    asset_type = NC.get_rule('type')
+    if asset_type.met:
+        asset.has_type = True
+        asset.type = asset_type.value
+
+    # Set the asset's name
+    name = NC.get_rule('name')
+    if name.met:
+        asset.has_name = True
+        asset.name = name.value
+
+    # Set the asset's variant
+    variant = NC.get_rule('variant')
+    if variant.met:
+        asset.has_variant = True
+        asset.variant = int(variant.value)
+
+    # Set the asset's scene and shot
+    scene_shot = NC.get_rule('scene_shot')
+
+    scene = scene_shot.get_rule('scene')
+    if scene.met:
+        asset.has_scene = True
+        asset.scene = int(scene.value)
+
+    shot = scene_shot.get_rule('shot')
+    if shot.met:
+        asset.has_shot = True
+        asset.shot = int(shot.value)
+
+    # Set the asset's version
+    version = NC.get_rule('version')
+    if version.met:
+        asset.has_version = True
+        asset.version = int(version.value.replace('v', ''))
+
+
+if __name__ == '__main__':
+    THE_ASSET = CAsset()
+
+    name_to_asset('mdl_policeCar_08_020-050_v010', THE_ASSET)
+
+    print THE_ASSET
