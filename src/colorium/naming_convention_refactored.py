@@ -1,3 +1,5 @@
+"""Module used to check if a string respects a set of rules described in a naming convention."""
+
 from abc import ABCMeta, abstractmethod, abstractproperty
 import re as regex
 
@@ -6,6 +8,7 @@ class NamingConventionError(Exception):
     """Base class for exceptions in this module."""
 
     pass
+
 
 class IntruderError(NamingConventionError):
     """
@@ -91,6 +94,24 @@ class NotEnoughVariablesError(NamingConventionError):
         self.message = message
 
 
+class BadValueError(NamingConventionError):
+    """
+    Raised when the user tries to set a rule's value to something that doesn't match the rule.
+
+    Attributes:
+        rule_name -- The name of the rule.
+        value -- The value passed by the user.
+        message -- Explanation of the error.
+    """
+
+    def __init__(self, rule_name, value, message):
+        super(BadValueError, self).__init__(rule_name, value, message)
+
+        self.rule_name = rule_name
+        self.value = value
+        self.message = message
+
+
 class NamingConvention(object):
     """Object that uses a set of rules to check if the naming convention is respected by the name."""
 
@@ -112,26 +133,28 @@ class NamingConvention(object):
     def mandatory_rules(self):
         """The list of mandatory rules."""
 
-        mandatory_rules = []
+        return [rule for rule in self.rules if not rule.optional]
 
-        for rule in self.rules:
-            if not rule.optional:
-                mandatory_rules.append(rule)
 
-        return mandatory_rules
+    @property
+    def optional_rules(self):
+        """The list of optional rules."""
+
+        return [rule for rule in self.rules if rule.optional]
 
 
     @property
     def rules_met(self):
         """The list of rules that are met."""
 
-        rules_met = []
+        return [rule for rule in self.rules if rule.met]
 
-        for rule in self.rules:
-            if rule.met:
-                rules_met.append(rule)
 
-        return rules_met
+    @property
+    def rules_not_met(self):
+        """The list of rules that are not met."""
+
+        return [rule for rule in self.rules if not rule.met]
 
 
     @property
@@ -142,7 +165,7 @@ class NamingConvention(object):
 
         for rule in self.rules_met:
             reconstructed_name += rule.formatted_value
-            reconstructed_name += self.separator if not rule is self.rules_met[-1] else ''
+            reconstructed_name += self.separator if rule is not self.rules_met[-1] else ''
 
         return reconstructed_name
 
@@ -151,8 +174,14 @@ class NamingConvention(object):
         self.__rules = rules if rules else []
         self.__separator = separator
 
+
     def add_rule(self, rule):
-        """Adds a rule to the list."""
+        """
+        Adds a rule to the list.
+
+        Parameters :
+            rule -- The rule to add to the list of rules.
+        """
 
         if self.rule_exists(rule.name):
             raise DuplicateNameError(rule.name, 'Cannot have two rules with the same name.')
@@ -164,7 +193,8 @@ class NamingConvention(object):
 
 
     def rule_exists(self, name):
-        """Checks if a rule already exists.
+        """
+        Checks if a rule already exists.
 
         Parameters :
             name -- The name of the rule.
@@ -181,14 +211,41 @@ class NamingConvention(object):
 
 
     def remove_rule(self, rule):
-        """Deletes a rule from the list."""
+        """
+        Deletes a rule from the list.
+
+        Parameters :
+            rule -- The rule to remove from the list of rules.
+        """
 
         if rule in self.rules:
             self.rules.remove(rule)
 
 
+    def get_rule(self, name):
+        """
+        Returns a rule by its name.
+
+        Parameters :
+            name -- The rule's name to return.
+
+        Result :
+            Returns the rule if it finds it, returns None otherwise.
+        """
+
+        result = None
+
+        for rule in self.rules:
+            if rule.name == name:
+                result = rule
+                break
+
+        return result
+
+
     def evaluate_name(self, name):
-        """Checks if all the rules of the naming convention are met by the name.
+        """
+        Checks if all the rules of the naming convention are met by the name.
 
         Parameters :
             name -- The name to evaluate.
@@ -223,10 +280,9 @@ class NamingConvention(object):
             Returns True if one of the rules is met, False otherwise.
         """
 
-        for rule in self.rules:
-            if not rule.met:
-                if rule.evaluate_variable(variable):
-                    return True
+        for rule in self.rules_not_met:
+            if rule.evaluate_variable(variable):
+                return True
 
         return False
 
@@ -259,6 +315,13 @@ class NamingConvention(object):
                 return False
 
         return True
+
+
+    def reset(self):
+        """Resets all the rules to their default state."""
+
+        for rule in self.rules:
+            rule.reset()
 
 
 class Rule(object):
@@ -304,7 +367,19 @@ class Rule(object):
 
     @abstractmethod
     def evaluate_variable(self, variable):
-        """Checks if the rule is respected by the variable."""
+        """
+        Checks if the rule is respected by the variable.
+
+        Parameters:
+            variable -- The variable to evaluate.
+        """
+
+        pass
+
+
+    @abstractmethod
+    def reset(self):
+        """Resets the rule to its default state."""
 
         pass
 
@@ -361,11 +436,79 @@ class RegexRule(Rule):
             self.__value = result.group()
             self.__met = True
 
+        return self.met
+
+
+    def reset(self):
+        self.__met = False
+        self.__value = ''
+
+
+class MultipleRegexRule(Rule):
+    """Object that determine if a part of the name matches one of multiple regular expressions."""
+
+    @property
+    def name(self):
+        return self.__name
+
+
+    @property
+    def met(self):
         return self.__met
 
 
+    @property
+    def value(self):
+        return self.__value
+
+
+    @property
+    def optional(self):
+        return self.__optional
+
+
+    @property
+    def formatted_value(self):
+        return self.__value
+
+
+    @property
+    def expressions(self):
+        """The list of regular expressions used to validate the rule."""
+
+        return self.__expressions
+
+
+    def __init__(self, name, expressions=None, optional=False):
+        self.__name = name
+        self.__met = False
+        self.__value = ''
+        self.__expressions = expressions if expressions else []
+        self.__optional = optional
+
+
+    def evaluate_variable(self, variable):
+        for expression in self.expressions:
+            result = regex.search(expression, variable)
+
+            if result:
+                print 'Rule \"{}\" met with variable \"{}\"'.format(self.__name, variable)
+
+                self.__value = result.group()
+                self.__met = True
+
+                break
+
+        return self.met
+
+
+    def reset(self):
+        self.__met = False
+        self.__value = ''
+
+
 class InternalNamingConventionRule(Rule):
-    """Object that determine if a part of the name composed by multiple sub-variables each matches a regular expression."""
+    """Object that determine if a part of the name respects a nested naming convention."""
 
     @property
     def name(self):
@@ -409,15 +552,39 @@ class InternalNamingConventionRule(Rule):
 
 
     def add_rule(self, rule):
-        """Adds a rule to the list."""
+        """
+        Adds a rule to the list.
+
+        Parameters :
+            rule -- The rule to add to the list of rules.
+        """
 
         self.naming_convention.add_rule(rule)
 
 
     def remove_rule(self, rule):
-        """Deletes a rule from the list."""
+        """
+        Deletes a rule from the list.
+
+        Parameters :
+            rule -- The rule to remove from the list of rules.
+        """
 
         self.naming_convention.remove_rule(rule)
+
+
+    def get_rule(self, name):
+        """
+        Returns a rule by its name.
+
+        Parameters :
+            name -- The rule's name to return.
+
+        Result :
+            Returns the rule if it finds it, returns None otherwise.
+        """
+
+        self.naming_convention.get_rule(name)
 
 
     def evaluate_variable(self, variable):
@@ -426,12 +593,17 @@ class InternalNamingConventionRule(Rule):
         except IntruderError:
             return self.met
 
-        if self.__met:
+        if self.met:
             for rule in self.naming_convention.rules:
                 if rule.met:
                     self.__value[rule.name] = rule.value
 
         return self.met
+
+
+    def reset(self):
+        for rule in self.naming_convention.rules:
+            rule.reset()
 
 
 NC = NamingConvention()
@@ -442,7 +614,7 @@ NC.add_rule(RULE_TYPE)
 RULE_NAME = RegexRule('name', r'^[a-zA-Z]+$', True)
 NC.add_rule(RULE_NAME)
 
-RULE_VARIANT = RegexRule('variant', r'^\d{2}$', True)
+RULE_VARIANT = MultipleRegexRule('variant', [r'^\d{2}$', r'^[a-zA-Z]+$'], True)
 NC.add_rule(RULE_VARIANT)
 
 RULE_SCENE_SHOT = InternalNamingConventionRule('scene_shot', True)
@@ -454,18 +626,9 @@ RULE_SCENE_SHOT.add_rule(RULE_SCENE)
 RULE_SHOT = RegexRule('shot', r'^\d{3}$', True)
 RULE_SCENE_SHOT.add_rule(RULE_SHOT)
 
-FOO_BAR_SHOT = InternalNamingConventionRule('foo_bar', False, separator='.')
-RULE_SCENE_SHOT.add_rule(FOO_BAR_SHOT)
-
-RULE_FOO = RegexRule('foo', r'^\d{3}$', False)
-FOO_BAR_SHOT.add_rule(RULE_FOO)
-
-RULE_BAR = RegexRule('bar', r'^\d{3}$', True)
-FOO_BAR_SHOT.add_rule(RULE_BAR)
-
-RULE_VERSION = RegexRule('version', r'^v\d{3}$', False)
+RULE_VERSION = MultipleRegexRule('version', [r'^v\d{3}$', r'^publish$', r'^export$'], False)
 NC.add_rule(RULE_VERSION)
 
-print NC.evaluate_name('mdl_policeCar_01_020-020-123.256_v001')
+print NC.evaluate_name('mdl_policeCar_crashed_010_v001')
 
 print NC.reconstructed_name
