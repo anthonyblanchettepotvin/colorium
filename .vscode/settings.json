@@ -1,0 +1,24 @@
+{
+    // Python settings
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+
+    // Files settings
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/__pycache__": true,
+        "**/**/*.pyc": true
+    },
+
+    // Linting settings
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--disable=assignment-from-no-return, wrong-import-position, wrong-import-order, line-too-long, unused-argument, no-init, old-style-class, too-many-arguments, super-init-not-called",
+    ]
+}
