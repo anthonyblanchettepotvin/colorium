@@ -1,2 +1,2 @@
 # colorium
-Asset Management Tools for Autodesk Maya
+Asset Management Tools for Autodesk Maya.
